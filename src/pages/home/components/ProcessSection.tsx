@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const steps = [
-  { step: 'STEP 1', title: '서류 지원(~6/23)', icon: 'ri-file-text-line', desc: '구글폼을 통해 지원서 제출' },
-  { step: 'STEP 2', title: '서류 결과 안내(6/26)', icon: 'ri-mail-check-line', desc: '서류 심사 결과 문자 발송' },
-  { step: 'STEP 3', title: '면접 심사(6/28~30)', icon: 'ri-user-voice-line', desc: '다대다 면접 (약 30분 소요)' },
-  { step: 'STEP 4', title: '최종 발표(7/1)', icon: 'ri-trophy-line', desc: '최종 합격자 발표' },
+  { step: 'STEP 1', title: '서류 지원', icon: 'ri-file-text-line', desc: '구글폼을 통해 지원서 제출' },
+  { step: 'STEP 2', title: '서류 결과 안내', icon: 'ri-mail-check-line', desc: '서류 심사 결과 문자 발송' },
+  { step: 'STEP 3', title: '면접 심사', icon: 'ri-user-voice-line', desc: '다대다 면접 (약 30분 소요)' },
+  { step: 'STEP 4', title: '최종 발표', icon: 'ri-trophy-line', desc: '최종 합격자 발표' },
 ];
 
 export default function ProcessSection() {
