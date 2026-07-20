@@ -1,17 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
+import { fetchFaqsFromSheet, type FaqItem } from '@/services/faq';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 
-interface FaqItem {
-  id: number;
-  question: string;
-  answer: string;
-}
-
-const faqs: FaqItem[] = [
+const fallbackFaqs: FaqItem[] = [
   {
     id: 1,
     question: '관련 지식이 없어도 지원할 수 있나요?',
@@ -67,23 +62,40 @@ const faqs: FaqItem[] = [
   },
 ];
 
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqs.map((faq) => ({
-    '@type': 'Question',
-    name: faq.question,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: faq.answer,
-    },
-  })),
-};
-
 export default function FaqPage() {
+  const [faqs, setFaqs] = useState<FaqItem[]>(fallbackFaqs);
   const [openId, setOpenId] = useState<number | null>(null);
 
   const toggle = (id: number) => setOpenId(openId === id ? null : id);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchFaqsFromSheet()
+      .then((data) => {
+        if (!cancelled && data.length > 0) setFaqs(data);
+      })
+      .catch((err) => {
+        console.error('구글 시트에서 FAQ 데이터를 불러오지 못해 기본 데이터를 표시합니다.', err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-dark-900">

@@ -35,6 +35,7 @@ jobs:
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
           VITE_AWARDS_SHEET_CSV_URL: ${{ secrets.VITE_AWARDS_SHEET_CSV_URL }}
           VITE_MEMBERS_SHEET_CSV_URL: ${{ secrets.VITE_MEMBERS_SHEET_CSV_URL }}
+          VITE_FAQ_SHEET_CSV_URL: ${{ secrets.VITE_FAQ_SHEET_CSV_URL }}
         run: npm run build
 
       - name: Pages 아티팩트 업로드
