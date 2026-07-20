@@ -32,9 +32,9 @@ jobs:
       - name: 빌드
         env:
           # 실제 값은 레포 Settings > Secrets and variables > Actions 에 등록합니다.
-          VITE_PUBLIC_SUPABASE_URL: ${{ secrets.VITE_PUBLIC_SUPABASE_URL }}
-          VITE_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.VITE_PUBLIC_SUPABASE_ANON_KEY }}
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
+          VITE_AWARDS_SHEET_CSV_URL: ${{ secrets.VITE_AWARDS_SHEET_CSV_URL }}
+          VITE_MEMBERS_SHEET_CSV_URL: ${{ secrets.VITE_MEMBERS_SHEET_CSV_URL }}
         run: npm run build
 
       - name: Pages 아티팩트 업로드

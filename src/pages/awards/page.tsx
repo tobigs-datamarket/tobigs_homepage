@@ -1,11 +1,35 @@
+import { useEffect, useState } from 'react';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
-import { awardsData } from '@/mocks/awards';
+import { awardsData as fallbackAwardsData, type AwardYear } from '@/mocks/awards';
+import { fetchAwardsFromSheet } from '@/services/awards';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 
 export default function AwardsPage() {
+  const [awardsData, setAwardsData] = useState<AwardYear[]>(fallbackAwardsData);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchAwardsFromSheet()
+      .then((data) => {
+        if (!cancelled && data.length > 0) setAwardsData(data);
+      })
+      .catch((err) => {
+        console.error('구글 시트에서 수상 데이터를 불러오지 못해 기본 데이터를 표시합니다.', err);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const awardsList = awardsData.flatMap((yearData) =>
     yearData.items.map((item) => ({
       '@type': 'ListItem',
@@ -47,7 +71,7 @@ export default function AwardsPage() {
           </div>
 
           {/* Awards by Year */}
-          <div className="space-y-8">
+          <div className={`space-y-8 transition-opacity ${isLoading ? 'opacity-60' : 'opacity-100'}`}>
             {awardsData.map((yearData) => (
               <div key={yearData.year} className="group">
                 {/* Year Header */}

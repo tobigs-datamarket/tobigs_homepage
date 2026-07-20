@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import SEO from '@/components/SEO';
 import Navbar from '@/components/feature/Navbar';
 import MemberCard from './components/MemberCard';
 import { membersMock, type Member } from '../../mocks/members';
+import { fetchMembersFromSheet } from '@/services/members';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
-
-const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const roleOrder: Record<string, number> = {
   president: 0,
@@ -69,56 +65,24 @@ export default function MembersPage() {
   }, [dropdownOpen]);
 
   useEffect(() => {
-    async function fetchMembers() {
-      try {
-        // Clear existing and seed fresh data from updated CSV mock
-        const { error: deleteError } = await supabase.from('members').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        if (deleteError) {
-          console.error('Delete error:', deleteError);
-        }
+    let cancelled = false;
 
-        const seedData = membersMock.map((m) => ({
-          name: m.name,
-          generation: m.generation,
-          university: m.university,
-          company: m.company || null,
-          role: m.role,
-        }));
-        const { error: seedError } = await supabase.from('members').insert(seedData);
-        if (seedError) {
-          console.error('Seed error:', seedError);
-        }
+    fetchMembersFromSheet()
+      .then((data) => {
+        if (!cancelled && data.length > 0) setMembers(data);
+        else if (!cancelled) setMembers(membersMock);
+      })
+      .catch((err) => {
+        console.error('구글 시트에서 동아리원 데이터를 불러오지 못해 기본 데이터를 표시합니다.', err);
+        if (!cancelled) setMembers(membersMock);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
 
-        const { data, error } = await supabase
-          .from('members')
-          .select('*')
-          .order('generation', { ascending: false })
-          .order('role', { ascending: true });
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          const mapped: Member[] = data.map((item) => ({
-            id: item.id,
-            name: item.name,
-            generation: item.generation,
-            university: item.university || '',
-            company: item.company || '',
-            role: item.role as Member['role'],
-            profile_image_url: item.profile_image_url,
-          }));
-          setMembers(mapped);
-        } else {
-          setMembers(membersMock);
-        }
-      } catch {
-        setMembers(membersMock);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMembers();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const dropdownLabel = selectedGen === null ? '전체 기수' : `${selectedGen}기`;
