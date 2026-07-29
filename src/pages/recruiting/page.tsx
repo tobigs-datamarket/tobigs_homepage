@@ -4,6 +4,7 @@ import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
+const RECRUITING_ALERT_ENDPOINT = import.meta.env.VITE_RECRUITING_ALERT_ENDPOINT as string | undefined;
 
 // Toggle this to switch between season and off-season view
 // In production, this would be managed by the admin
@@ -114,11 +115,16 @@ function OffSeasonView() {
       return;
     }
 
+    if (!RECRUITING_ALERT_ENDPOINT) {
+      setError('알림 신청 기능이 아직 설정되지 않았습니다.');
+      return;
+    }
+
     try {
       const formData = new URLSearchParams();
       formData.append('email', email);
 
-      const res = await fetch('https://readdy.ai/api/form/d86fbergv8igf6sht8h0', {
+      const res = await fetch(RECRUITING_ALERT_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData.toString(),
@@ -151,7 +157,6 @@ function OffSeasonView() {
 
         {!submitted ? (
           <form
-            data-readdy-form
             onSubmit={handleSubmit}
             className="bg-dark-800 border border-dark-600/40 rounded-2xl p-8"
           >
