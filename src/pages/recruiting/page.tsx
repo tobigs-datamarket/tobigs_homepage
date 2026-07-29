@@ -8,7 +8,7 @@ const RECRUITING_ALERT_ENDPOINT = import.meta.env.VITE_RECRUITING_ALERT_ENDPOINT
 
 // Toggle this to switch between season and off-season view
 // In production, this would be managed by the admin
-const IS_RECRUITING_SEASON = true;
+const IS_RECRUITING_SEASON = false;
 
 const steps = [
   { step: 'STEP 1', title: '서류 지원(~6/23)', icon: 'ri-file-text-line', desc: '구글폼을 통해 지원서 제출' },
