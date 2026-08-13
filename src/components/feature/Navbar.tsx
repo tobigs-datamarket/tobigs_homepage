@@ -13,7 +13,7 @@ interface NavItem {
   dropdown?: DropdownItem[];
 }
 
-const EXTERNAL_PROJECT_URL = 'https://melodic-opinion-9ae.notion.site/TOBIG-s-b38f6f28769f825397288172bc1f8ba3?pvs=73';
+const EXTERNAL_PROJECT_URL = 'https://great-wholesaler-9e1.notion.site/TOBIG-s-3cb02c1ed3668286a24d015ba69029fc';
 
 const navItems: NavItem[] = [
   {
