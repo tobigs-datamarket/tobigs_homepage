@@ -9,7 +9,7 @@ interface StatItem {
 
 const stats: StatItem[] = [
   { value: 400, suffix: '+', label: '누적 동아리원', description: '매 기수 새로운 멤버들과 함께 성장' },
-  { value: 90, suffix: '+', label: '공모전 수상 실적', description: '2015년부터 쌓아온 실전 경쟁력' },
+  { value: 100, suffix: '+', label: '공모전 수상 실적', description: '2015년부터 쌓아온 실전 경쟁력' },
   { value: 300, suffix: '+', label: '누적 프로젝트', description: '데이터·AI 전 분야를 아우르는 결과물' },
 ];
 

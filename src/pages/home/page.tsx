@@ -22,7 +22,7 @@ const homeSchema = {
       url: SITE_URL,
       logo: LOGO_URL,
       description:
-        'AI·데이터분석 대표 연합 동아리 투빅스. 2014년부터 400+ 누적 동아리원, 90+ 수상 실적, 300+ 누적 프로젝트.',
+        'AI·데이터분석 대표 연합 동아리 투빅스. 2014년부터 400+ 누적 동아리원, 100+ 수상 실적, 300+ 누적 프로젝트.',
       sameAs: [
         'https://www.instagram.com/tobigs_official/',
         'https://github.com/tobigs-datamarket',

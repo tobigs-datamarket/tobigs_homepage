@@ -50,7 +50,7 @@ export default function AwardsPage() {
     <div className="min-h-screen bg-dark-900">
       <SEO
         title="수상 기록 | TOBIG's 투빅스"
-        description="투빅스의 수상 기록을 확인하세요. 2015년부터 현재까지 90회 이상의 대회 수상 실적을 보유하고 있습니다."
+        description="투빅스의 수상 기록을 확인하세요. 2015년부터 현재까지 100회 이상의 대회 수상 실적을 보유하고 있습니다."
         keywords="투빅스 수상, 데이터분석 대회, AI 대회, 머신러닝 경진대회, 수상 실적"
         ogUrl={`${SITE_URL}/awards`}
         schema={awardsSchema}
@@ -66,7 +66,7 @@ export default function AwardsPage() {
               수상 기록
             </h1>
             <p className="text-gray-400 text-base">
-              2015년부터 현재까지 <strong className="text-navy-300">90+</strong>회 수상 실적
+              2015년부터 현재까지 <strong className="text-navy-300">100+</strong>회 수상 실적
             </p>
           </div>
 
