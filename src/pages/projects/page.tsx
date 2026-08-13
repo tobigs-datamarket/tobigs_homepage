@@ -3,7 +3,7 @@ import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
-const NOTION_URL = 'https://kaput-bull-375.notion.site/TOBIG-s-36cffd4098ae804ebf1ae723705a28f8?pvs=74';
+const NOTION_URL = 'https://great-wholesaler-9e1.notion.site/TOBIG-s-3cb02c1ed3668286a24d015ba69029fc';
 
 export default function ProjectsPage() {
   return (
