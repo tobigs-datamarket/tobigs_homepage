@@ -105,10 +105,12 @@ function SeasonView() {
 function OffSeasonView() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
     setError('');
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError('올바른 이메일 주소를 입력해주세요.');
@@ -120,6 +122,7 @@ function OffSeasonView() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const formData = new URLSearchParams();
       formData.append('email', email);
@@ -137,6 +140,8 @@ function OffSeasonView() {
       }
     } catch {
       setError('제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -170,13 +175,15 @@ function OffSeasonView() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@email.com"
-                className="flex-1 px-4 py-3 bg-dark-700 border border-dark-600/40 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-navy-600 transition-colors"
+                disabled={submitting}
+                className="flex-1 px-4 py-3 bg-dark-700 border border-dark-600/40 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-navy-600 transition-colors disabled:opacity-60"
               />
               <button
                 type="submit"
-                className="px-6 py-3 bg-navy-600 hover:bg-navy-500 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                disabled={submitting}
+                className="px-6 py-3 bg-navy-600 hover:bg-navy-500 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                알림 신청
+                {submitting ? '신청 중...' : '알림 신청'}
               </button>
             </div>
             {error && <p className="text-red-400 text-xs">{error}</p>}
