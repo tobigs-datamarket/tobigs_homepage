@@ -40,8 +40,7 @@ OT 안내
 * 참석 여부는 안내 문자에 회신해 주시기 바랍니다.
 
 다시 한번 투빅스에 지원해 주신 모든 분들께 감사드리며, 최종 합격하신 분들께 진심으로 축하의 말씀을 전합니다.`,
-    image: 'https://storage.readdy-site.link/project_files/08aeba0a-a656-461b-aef6-541b167b6190/a2636d4c-6190-47c5-80a7-55fa8710aa61_compressed_tobigi.webp',
-    isPinned: true,
+    isPinned: false,
   },
   {
     id: 'notice-005',
@@ -62,7 +61,6 @@ OT 안내
 작성해주신 지원서를 토대로 면접을 진행할 예정이니, 참고 부탁드립니다.
 
 다시 한번 지원해주신 모든 분들께 감사드립니다.`,
-    image: 'https://storage.readdy-site.link/project_files/08aeba0a-a656-461b-aef6-541b167b6190/6842618a-07fb-4332-ad8f-3584b9e8c692_compressed_-2026.-6.-26.--5.39.webp',
     isPinned: false,
   },
   {
