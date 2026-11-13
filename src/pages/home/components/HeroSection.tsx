@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { WORDMARK } from '@/config/brand';
 import { usePrefersReducedMotion } from '@/hooks/useMediaQuery';
@@ -17,14 +17,14 @@ const STARS = Array.from({ length: 110 }, (_, i) => ({
   top: `${rand(i, 2) * 57}%`,
   width: rand(i, 3) > 0.7 ? 2 : 1.5,
   height: rand(i, 3) > 0.7 ? 2 : 1.5,
-  '--t': `${2.5 + rand(i, 4) * 4}s`,
+  '--t': `${1.8 + rand(i, 4) * 3.2}s`,
   '--d': `${-rand(i, 5) * 6}s`,
 })) as CSSProperties[];
 // 십자 빛살로 반짝이는 밝은 별 몇 개: 각자 다른 주기·시점이라 한 번에 하나씩 반짝인다
-const GLINTS = Array.from({ length: 7 }, (_, i) => ({
+const GLINTS = Array.from({ length: 10 }, (_, i) => ({
   left: `${6 + rand(i, 8) * 88}%`,
   top: `${5 + rand(i, 9) * 42}%`,
-  '--t': `${6 + rand(i, 10) * 5}s`,
+  '--t': `${4.5 + rand(i, 10) * 4}s`,
   '--d': `${-rand(i, 11) * 11}s`,
   '--s': `${14 + rand(i, 12) * 12}px`,
 })) as CSSProperties[];
@@ -37,28 +37,6 @@ const SPARKS = Array.from({ length: 24 }, (_, i) => {
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduced = usePrefersReducedMotion();
-  const [paused, setPaused] = useState(false);
-
-  // 계속 반짝이는 별은 토글(WCAG 2.2.2), 화면 밖, 숨긴 탭에서 멈춘다
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    let offscreen = false;
-    const apply = () => {
-      el.dataset.paused = String(paused || offscreen || document.hidden);
-    };
-    const io = new IntersectionObserver(([entry]) => {
-      offscreen = !entry.isIntersecting;
-      apply();
-    });
-    io.observe(el);
-    document.addEventListener('visibilitychange', apply);
-    apply();
-    return () => {
-      io.disconnect();
-      document.removeEventListener('visibilitychange', apply);
-    };
-  }, [paused]);
 
   // 바로 아래 섹션(D-day 띠 또는 숫자)으로: 고정 id 대신 다음 형제 요소
   const scrollToNext = () => {
@@ -135,15 +113,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* 별 반짝임 멈춤 (reduced motion이면 움직이는 것이 없어 숨김) */}
-      <button
-        type="button"
-        onClick={() => setPaused((v) => !v)}
-        className="absolute bottom-3 right-3 z-[5] inline-flex items-center gap-1.5 rounded-full border border-white/[0.16] bg-navy-950/50 px-3 py-1.5 text-xs text-gray-300 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-300 motion-reduce:hidden sm:bottom-5 sm:right-5 [@media(max-height:700px)]:bottom-auto [@media(max-height:700px)]:top-[72px]"
-      >
-        <i aria-hidden="true" className={paused ? 'ri-play-fill' : 'ri-pause-fill'} />
-        {paused ? '배경 재생' : '배경 멈춤'}
-      </button>
     </section>
   );
 }

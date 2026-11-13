@@ -130,9 +130,8 @@ body {
 }
 .hero-spark { width: 3px; height: 3px; margin: -1.5px; background: #dfe7ff; transform: rotate(var(--a)) translateY(calc(-200vw - var(--h))); animation: hero-spark 0.7s var(--d) ease-out both; }
 .hero-fade { animation: hero-fade 0.6s var(--at) ease-out both; } /* 슬로건·소개·버튼이 --at 시각에 차례로 */
-[data-paused='true'] .hero-star, [data-paused='true'] .hero-glint { animation-play-state: paused; }
-@keyframes hero-twinkle { from { opacity: 0.25; transform: scale(0.7); } to { opacity: 1; transform: scale(1.15); } }
-@keyframes hero-glint { 0%, 60%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); } 78% { opacity: 1; transform: scale(1) rotate(45deg); } }
+@keyframes hero-twinkle { from { opacity: 0.15; transform: scale(0.6); } to { opacity: 1; transform: scale(1.25); } }
+@keyframes hero-glint { 0%, 66%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); } 80% { opacity: 1; transform: scale(1) rotate(45deg); } }
 @keyframes hero-bloom { 0%, 37% { opacity: 0; } 50%, 78% { opacity: 1; } }
 @keyframes hero-rim { 0% { opacity: 0; } 30% { opacity: 1; } }
 @keyframes hero-tighten { from { transform: translateX(calc(var(--d) * 0.13em)); } }
