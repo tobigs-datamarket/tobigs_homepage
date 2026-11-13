@@ -63,14 +63,16 @@ export default function AboutSection() {
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
             }`}
           >
-            <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden">
-              <img
-                src="https://storage.readdy-site.link/project_files/08aeba0a-a656-461b-aef6-541b167b6190/9806c8cc-c9a4-44e0-8ec5-ccf4d471a142_about.png?v=a107218ef19969c736091ca54abbff91"
-                alt="투빅스 소개"
-                className="w-full h-full object-cover object-top"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark-900/40 to-transparent" />
-            </div>
+            {/* 문구가 들어간 카드 이미지라 자르지 않는다: 원본 비율(1368×768) 그대로 폭에 맞춤 */}
+            <img
+              src="https://storage.readdy-site.link/project_files/08aeba0a-a656-461b-aef6-541b167b6190/9806c8cc-c9a4-44e0-8ec5-ccf4d471a142_about.png?v=a107218ef19969c736091ca54abbff91"
+              alt="투빅스 소개"
+              width={1368}
+              height={768}
+              loading="lazy"
+              decoding="async"
+              className="block h-auto w-full rounded-2xl"
+            />
           </div>
         </div>
 

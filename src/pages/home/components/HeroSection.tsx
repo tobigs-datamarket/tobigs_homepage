@@ -17,8 +17,16 @@ const STARS = Array.from({ length: 110 }, (_, i) => ({
   top: `${rand(i, 2) * 57}%`,
   width: rand(i, 3) > 0.7 ? 2 : 1.5,
   height: rand(i, 3) > 0.7 ? 2 : 1.5,
-  '--t': `${3 + rand(i, 4) * 4}s`,
+  '--t': `${2.5 + rand(i, 4) * 4}s`,
   '--d': `${-rand(i, 5) * 6}s`,
+})) as CSSProperties[];
+// 십자 빛살로 반짝이는 밝은 별 몇 개: 각자 다른 주기·시점이라 한 번에 하나씩 반짝인다
+const GLINTS = Array.from({ length: 7 }, (_, i) => ({
+  left: `${6 + rand(i, 8) * 88}%`,
+  top: `${5 + rand(i, 9) * 42}%`,
+  '--t': `${6 + rand(i, 10) * 5}s`,
+  '--d': `${-rand(i, 11) * 11}s`,
+  '--s': `${14 + rand(i, 12) * 12}px`,
 })) as CSSProperties[];
 // 혜성이 지나간 테두리 위 반짝이: 각도(°)와 혜성이 그 자리를 지나는 시각
 const SPARKS = Array.from({ length: 24 }, (_, i) => {
@@ -68,7 +76,9 @@ export default function HeroSection() {
         {STARS.map((style, i) => (
           <span key={i} className="hero-star" style={style} />
         ))}
-        <div className="hero-rays" />
+        {GLINTS.map((style, i) => (
+          <span key={i} className="hero-glint" style={style} />
+        ))}
         <div className="hero-bloom" />
       </div>
 
