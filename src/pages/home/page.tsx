@@ -2,6 +2,7 @@ import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
 import HeroSection from './components/HeroSection';
+import DdaySection from './components/DdaySection';
 import StatsSection from './components/StatsSection';
 import AboutSection from './components/AboutSection';
 import ProgramsSection from './components/ProgramsSection';
@@ -61,6 +62,7 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
+        <DdaySection />
         <StatsSection />
         <AboutSection />
         <ProgramsSection />

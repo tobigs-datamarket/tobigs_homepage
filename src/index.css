@@ -77,3 +77,75 @@ body {
 .card-hover:hover {
   transform: translateY(-4px);
 }
+
+/* Hero: 레퍼런스 영상(tobigs_main.mp4, 1920x1080, 6초) 재현.
+   기본 스타일 = 마지막 정지 화면, 애니메이션은 그 앞 인트로만 정의한다(reduced motion은 애니메이션만 끄면 된다).
+   구도: 행성 반지름 = 화면 폭의 2배, 수평선 꼭대기 = 높이 58.9%, 글자 아랫선 = 그 위 4.8%, 부제 = 70.2%.
+   시각: 혜성 0.36-0.72s → 새벽빛 1.05-1.4s → 글자 1.35-1.85s(가운데부터) → 자간 좁힘 2.2-2.8s → 슬로건·소개·버튼 2.8-3.3s. */
+.hero-sky { position: absolute; inset: 0; background: linear-gradient(#02030a, #060a1b 58.9%, #02060e); }
+.hero-star { position: absolute; border-radius: 9999px; background: #dfe6fb; opacity: 0.6; animation: hero-twinkle var(--t) var(--d) ease-in-out infinite alternate; }
+.hero-rays, .hero-bloom { position: absolute; left: 50%; top: 58.9%; translate: -50% -50%; border-radius: 9999px; }
+.hero-rays {
+  width: 150vw; height: 150vw; opacity: 0;
+  background: repeating-conic-gradient(from -70deg, rgb(160 185 255 / 0.07) 0 4deg, transparent 4deg 13deg);
+  -webkit-mask-image: radial-gradient(closest-side, #000 8%, transparent 55%);
+  mask-image: radial-gradient(closest-side, #000 8%, transparent 55%);
+  animation: hero-dawn 2.8s ease-out both;
+}
+.hero-bloom {
+  width: 80vw; height: 46vw; opacity: 0.25;
+  background: radial-gradient(closest-side, rgb(214 224 255 / 0.95), rgb(120 150 235 / 0.45) 35%, transparent);
+  animation: hero-bloom 2.8s ease-out both;
+}
+.hero-word {
+  position: absolute; left: 50%; bottom: 45.9%; translate: -50% 0; margin: 0; padding-left: 0.12em; /* 마지막 자간만큼 가운데 보정 */
+  white-space: nowrap; font-family: Inter, 'Noto Sans KR', sans-serif; font-size: clamp(2.6rem, 10.2vw, 12rem); font-weight: 900; /* v4 워드마크 글꼴 */ line-height: 1; letter-spacing: 0.12em; color: #fff;
+}
+@media (max-aspect-ratio: 1/1) { .hero-word { font-size: 15vw; } }
+.hero-spread { display: inline-block; animation: hero-tighten 0.6s 2.2s cubic-bezier(0.4, 0, 0.2, 1) both; }
+.hero-letter {
+  position: relative; display: inline-block; text-shadow: 0 0 0.25em rgb(150 175 255 / 0.35);
+  animation: hero-letter 0.5s calc(1.35s + var(--o) * 0.12s) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.hero-letter::after { content: attr(data-ch); position: absolute; inset: 0; color: #b3c4ff; filter: blur(0.1em); opacity: 0.22; animation: hero-glow 1.6s 1.35s ease-out both; }
+.hero-planet {
+  position: absolute; left: 50%; top: 58.9%; width: 400vw; height: 400vw; margin-left: -200vw; border-radius: 9999px;
+  background: linear-gradient(#0b1430, #080e1d 1.2vw, #02060e 20vw);
+  box-shadow: inset 0 1px 0 #667294, 0 -1px 8px rgb(130 155 235 / 0.45), 0 -6px 50px rgb(90 120 210 / 0.3);
+}
+.hero-rim { position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 -2px 18px rgb(170 190 255 / 0.9); opacity: 0; animation: hero-rim 1.2s 0.35s ease-out both; }
+.hero-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 75% 90% at 50% 58.9%, transparent 45%, rgb(2 3 10 / 0.8)); }
+.hero-orbit { position: absolute; left: 50%; top: calc(58.9% + 200vw); } /* 행성 중심: 혜성·반짝이는 여기서 회전해 테두리를 따라간다 */
+.hero-comet, .hero-spark { position: absolute; border-radius: 9999px; opacity: 0; }
+.hero-comet {
+  width: 10px; height: 10px; margin: -5px; background: #fff;
+  box-shadow: 0 0 12px 4px rgb(200 215 255 / 0.9), -40px 3px 18px -6px rgb(200 215 255 / 0.55);
+  animation: hero-comet 0.36s 0.36s cubic-bezier(0.45, 0, 0.55, 1) both;
+}
+.hero-spark { width: 3px; height: 3px; margin: -1.5px; background: #dfe7ff; transform: rotate(var(--a)) translateY(calc(-200vw - var(--h))); animation: hero-spark 0.7s var(--d) ease-out both; }
+.hero-fade { animation: hero-fade 0.6s var(--at) ease-out both; } /* 슬로건·소개·버튼이 --at 시각에 차례로 */
+[data-paused='true'] .hero-star { animation-play-state: paused; }
+@keyframes hero-twinkle { from { opacity: 0.3; } to { opacity: 1; } }
+@keyframes hero-dawn { 0%, 37% { opacity: 0; } 50%, 70% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes hero-bloom { 0%, 37% { opacity: 0; } 50%, 78% { opacity: 1; } }
+@keyframes hero-rim { 0% { opacity: 0; } 30% { opacity: 1; } }
+@keyframes hero-tighten { from { transform: translateX(calc(var(--d) * 0.13em)); } }
+@keyframes hero-letter { from { transform: translateY(140%) rotate(calc(var(--d) * 4deg)); } }
+@keyframes hero-glow { 0% { opacity: 0; } 25%, 55% { opacity: 1; } }
+@keyframes hero-comet {
+  0% { opacity: 0; transform: rotate(-14.5deg) translateY(-200vw); }
+  8%, 92% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(14.5deg) translateY(-200vw); }
+}
+@keyframes hero-spark { 15% { opacity: 1; } }
+@keyframes hero-fade { from { opacity: 0; transform: translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .hero *,
+  .hero *::after {
+    animation: none !important;
+  }
+}

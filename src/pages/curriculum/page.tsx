@@ -3,53 +3,14 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
+import CurriculumMap from './components/CurriculumMap';
 import {
-  dataCurriculum,
-  aiCurriculum,
   dataTrackTechStack,
   aiTrackTechStack,
-  type CurriculumWeek,
   type TechStackCategory,
 } from '@/mocks/curriculum';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
-
-function WeekCard({ item, index }: { item: CurriculumWeek; index: number }) {
-  return (
-    <div
-      className="relative flex gap-4 md:gap-6 group"
-      style={{ animationDelay: `${index * 60}ms` }}
-    >
-      {/* Timeline Line & Dot */}
-      <div className="flex flex-col items-center">
-        <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${
-          item.isCommon ? 'bg-navy-400' : 'bg-dark-500 border-2 border-navy-700'
-        }`} />
-        <div className="w-px flex-1 bg-dark-600/50 mt-1" />
-      </div>
-
-      {/* Content */}
-      <div className="pb-6 flex-1 min-w-0">
-        <div className="bg-dark-800 border border-dark-600/40 rounded-xl p-4 md:p-5 group-hover:border-navy-700/40 transition-colors">
-          <div className="flex items-start justify-between gap-3 flex-wrap">
-            <div>
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="text-navy-400 text-xs font-semibold tracking-wider">{item.week}</span>
-                {item.isCommon && (
-                  <span className="px-2 py-0.5 bg-navy-900/60 border border-navy-700/40 rounded-full text-navy-300 text-xs">
-                    공통
-                  </span>
-                )}
-              </div>
-              <h3 className="text-white font-semibold text-sm md:text-base">{item.topic}</h3>
-            </div>
-          </div>
-          {item.description && <p className="text-gray-400 text-sm mt-2 leading-relaxed">{item.description}</p>}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function TechStackCard({ category }: { category: TechStackCategory }) {
   return (
@@ -102,7 +63,6 @@ export default function CurriculumPage() {
     setSearchParams({ track });
   };
 
-  const curriculum: CurriculumWeek[] = activeTrack === 'data' ? dataCurriculum : aiCurriculum;
   const techStack: TechStackCategory[] = activeTrack === 'data' ? dataTrackTechStack : aiTrackTechStack;
 
   const curriculumSchema = {
@@ -196,13 +156,15 @@ export default function CurriculumPage() {
             ))}
           </div>
 
-          {/* Timeline */}
-          <div className="mb-10">
-            <h2 className="font-display font-bold text-xl text-white mb-6 text-center">주차별 커리큘럼</h2>
-            {curriculum.map((item, idx) => (
-              <WeekCard key={item.week} item={item} index={idx} />
-            ))}
-          </div>
+        </div>
+
+        {/* Subway map — 본문보다 넓게 */}
+        <section className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
+          <h2 className="font-display font-bold text-xl text-white mb-8 text-center">주차별 커리큘럼</h2>
+          <CurriculumMap active={activeTrack} />
+        </section>
+
+        <div className="max-w-5xl mx-auto px-4 md:px-6">
 
           {/* Info Box */}
           <div className="bg-dark-800 border border-navy-800/30 rounded-xl p-6 mb-10">
@@ -212,7 +174,7 @@ export default function CurriculumPage() {
             </div>
             <ul className="space-y-2.5">
               {[
-                '1~5주차, 10주차는 데이터/AI 트랙 공동 진행',
+                '1~4주차, 10주차는 데이터/AI 트랙 공동 진행',
                 '격주 토요일 오후 2시~5시 운영',
                 '세션 후 과제 제출로 복습 병행',
                 '커리큘럼은 기수별로 일부 변경될 수 있습니다',

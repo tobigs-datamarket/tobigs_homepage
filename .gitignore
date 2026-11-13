@@ -4,6 +4,7 @@ node_modules/
 # build output
 dist/
 dist-ssr/
+auto-imports.d.ts
 
 # env files (Secrets로 관리, 절대 커밋하지 않음)
 .env

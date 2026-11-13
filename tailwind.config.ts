@@ -44,6 +44,7 @@ export default {
         'count-up': 'countUp 2s ease-out forwards',
         'slide-left': 'slideLeft 0.5s ease-out forwards',
         'slide-right': 'slideRight 0.5s ease-out forwards',
+        'dday-flip': 'ddayFlip 0.45s cubic-bezier(0.45, 0, 0.55, 1) both',
       },
       keyframes: {
         fadeUp: {
@@ -61,6 +62,12 @@ export default {
         slideRight: {
           '0%': { opacity: '0', transform: 'translateX(-30px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        // D-day 일력: 한 장이 윗변을 축으로 뒤로 넘어간다
+        ddayFlip: {
+          '0%': { transform: 'rotateX(0deg)', opacity: '1' },
+          '70%': { opacity: '1' },
+          '100%': { transform: 'rotateX(-100deg)', opacity: '0' },
         },
       },
     },

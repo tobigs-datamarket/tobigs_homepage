@@ -111,7 +111,7 @@ export const dataCurriculum: CurriculumWeek[] = [
   { week: '2주차', topic: 'NLP', description: '임베딩, Attention', isCommon: true },
   { week: '3주차', topic: 'Transformer', description: 'Self-Attention, BERT·GPT', isCommon: true },
   { week: '4주차', topic: 'Time Series', description: 'ARIMA, TSFM', isCommon: true },
-  { week: '5주차', topic: 'Data Modeling', description: '이벤트 로그 설계, 윈도우 함수', isCommon: true },
+  { week: '5주차', topic: 'Data Modeling', description: '이벤트 로그 설계, 윈도우 함수'},
   { week: '6주차', topic: 'Metrics & Data Mart', description: '북극성 지표, 메트릭 트리' },
   { week: '7주차', topic: 'Growth Analytics', description: '코호트, LTV' },
   { week: '8주차', topic: 'Data Storytelling', description: '시각화 원칙, 대시보드 설계' },
@@ -124,10 +124,88 @@ export const aiCurriculum: CurriculumWeek[] = [
   { week: '2주차', topic: 'NLP', description: '임베딩, Attention', isCommon: true },
   { week: '3주차', topic: 'Transformer', description: 'Self-Attention, BERT·GPT', isCommon: true },
   { week: '4주차', topic: 'Time Series', description: 'ARIMA, TSFM', isCommon: true },
-  { week: '5주차', topic: 'Generative Model', description: 'VAE, Diffusion', isCommon: true },
+  { week: '5주차', topic: 'Generative Model', description: 'VAE, Diffusion'},
   { week: '6주차', topic: 'Multimodal', description: 'CLIP, VLM' },
   { week: '7주차', topic: 'LLM Engineering', description: 'LoRA, RAG' },
   { week: '8주차', topic: 'RL & Alignment', description: 'PPO, RLHF' },
   { week: '9주차', topic: 'AI in Production', description: 'MLOps, LLM 서빙' },
   { week: '10주차', topic: '심화세션 발표회', description: '', isCommon: true },
+];
+
+export type CurriculumTrack = 'common' | 'data' | 'ai';
+
+export interface CurriculumSpeaker {
+  title: string;
+  topics: string[];
+}
+
+export interface CurriculumStation {
+  week: number;
+  track: CurriculumTrack;
+  title: string;
+  /** 노선도 라벨용 (없으면 title) */
+  shortTitle?: string;
+  speakers: CurriculumSpeaker[];
+  /** 초청 강연 교시 (1교시 = 1, 2교시 = 2) — 세부 topic은 비워 둔다 */
+  guest?: 1 | 2;
+}
+
+export const curriculumStations: CurriculumStation[] = [
+  { week: 1, track: 'common', title: 'ML & DL', speakers: [
+    { title: 'ML', topics: ['일반화·과적합', '편향-분산', 'L1/L2·교차검증', '트리 앙상블'] },
+    { title: 'DL', topics: ['퍼셉트론', '역전파', 'SGD·Adam', 'CNN'] },
+  ] },
+  { week: 2, track: 'common', title: 'NLP', speakers: [
+    { title: '토큰화·임베딩·RNN', topics: ['Subword', 'TF-IDF', 'Word2Vec', 'RNN'] },
+    { title: 'LSTM·Seq2Seq·Attention', topics: ['LSTM/GRU', 'Encoder-Decoder', 'Q·K·V'] },
+  ] },
+  { week: 3, track: 'common', title: 'Transformer', speakers: [
+    { title: 'Self-Attention·Encoder-Decoder', topics: ['Multi-Head', 'Positional Encoding', 'Cross-Attention'] },
+    { title: 'BERT·GPT·Scaling', topics: ['MLM/CLM', 'ViT', 'Scaling Law', 'Decoding'] },
+  ] },
+  { week: 4, track: 'common', title: 'Time Series', speakers: [
+    { title: '정상성·ARIMA·지수평활', topics: ['분해', 'ADF', 'ACF/PACF', 'SARIMA'] },
+    { title: '딥러닝 예측·TSFM·이상탐지', topics: ['LSTM 예측', 'Chronos·TimesFM', 'AE 이상탐지'] },
+  ] },
+  { week: 5, track: 'data', title: 'Data Modeling', speakers: [
+    { title: 'ERD', topics: ['PK/FK', '정규화', '서비스 데이터 모델링'] },
+    { title: '이벤트 로그·SQL 윈도우 함수', topics: ['이벤트 스키마', 'CTE', 'ROW_NUMBER·LAG'] },
+  ] },
+  { week: 6, track: 'data', title: 'Metrics & Data Mart', shortTitle: 'Metrics & Mart', speakers: [
+    { title: '북극성 지표·메트릭 트리', topics: ['KPI', 'North Star', "Goodhart's Law", '지표 분해'] },
+    { title: '마트 설계', topics: ['Star Schema', 'dbt', 'Semantic Layer'] },
+  ] },
+  { week: 7, track: 'data', title: 'Growth Analytics', speakers: [
+    { title: '퍼널·코호트', topics: ['AARRR', '전환율', '코호트 히트맵'] },
+    { title: '리텐션·LTV', topics: ['Day-N 리텐션', 'Churn', 'LTV/CAC'] },
+  ] },
+  { week: 8, track: 'data', title: 'Data Storytelling', speakers: [
+    { title: '시각화 원칙', topics: ['차트 선택', 'Data-Ink Ratio', '인사이트→액션'] },
+    { title: '대시보드 설계', topics: ['KPI 카드', 'Drill-down', 'Streamlit'] },
+  ] },
+  { week: 9, track: 'data', title: 'Causal Inference', speakers: [
+    { title: 'A/B 설계·검정력', topics: ['Power Analysis', 'MDE', 'CUPED'] },
+    { title: 'DiD', topics: ['준실험설계', 'PSM', 'Parallel Trends', 'RDD·IV'] },
+  ] },
+  { week: 5, track: 'ai', title: 'Generative AI', speakers: [
+    { title: 'VAE·ELBO', topics: ['Autoencoder', 'Reparameterization', 'KL'] },
+    { title: 'Diffusion·Flow Matching', topics: ['DDPM', 'CFG', 'Flow Matching'] },
+  ] },
+  { week: 6, track: 'ai', title: 'Multimodal AI', speakers: [
+    { title: 'CLIP·Zero-shot', topics: ['Contrastive Learning', '이미지-텍스트 검색'] },
+    { title: 'VLM·Text-to-Image', topics: ['LLaVA', 'VQA', 'Inpainting'] },
+  ] },
+  { week: 7, track: 'ai', title: 'LLM Engineering', speakers: [
+    { title: 'Fine-tuning·LoRA', topics: ['SFT', 'PEFT', 'QLoRA'] },
+    { title: 'RAG·AI Agent', topics: ['Vector DB', 'Reranking', 'Tool Calling', 'ReAct'] },
+  ] },
+  { week: 8, track: 'ai', title: 'Reinforcement Learning & Alignment', shortTitle: 'RL & Alignment', speakers: [
+    { title: 'MDP·PPO', topics: ['Bellman', 'Q-Learning', 'Actor-Critic'] },
+    { title: 'RLHF·DPO·GRPO', topics: ['Reward Model', 'DPO Loss', 'GRPO'] },
+  ] },
+  { week: 9, track: 'ai', title: 'AI in Production', speakers: [
+    { title: 'MLOps·모니터링', topics: ['MLflow', 'FastAPI', 'Docker', 'Drift'] },
+    { title: 'LLMOps·서빙', topics: ['LLM 평가', 'vLLM', 'KV Cache'] },
+  ] },
+  { week: 10, track: 'common', title: '심화세션 발표회', speakers: [] },
 ];

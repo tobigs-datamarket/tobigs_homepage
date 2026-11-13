@@ -1,93 +1,139 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
+import { WORDMARK } from '@/config/brand';
+import { usePrefersReducedMotion } from '@/hooks/useMediaQuery';
+
+// 레퍼런스 영상(tobigs_main.mp4, 6초) 재현. 장면 배치와 시각은 index.css의 .hero-* 에 있다.
+const LETTERS = [...WORDMARK];
+const MID = (LETTERS.length - 1) / 2; // 가운데 글자(I)부터 바깥으로 솟아오른다
+
+// 고정 의사난수: 렌더마다 같은 자리에 별과 반짝이를 놓는다
+const rand = (i: number, n: number) => {
+  const x = Math.sin(i * 12.9898 + n * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+const STARS = Array.from({ length: 110 }, (_, i) => ({
+  left: `${rand(i, 1) * 100}%`,
+  top: `${rand(i, 2) * 57}%`,
+  width: rand(i, 3) > 0.7 ? 2 : 1.5,
+  height: rand(i, 3) > 0.7 ? 2 : 1.5,
+  '--t': `${3 + rand(i, 4) * 4}s`,
+  '--d': `${-rand(i, 5) * 6}s`,
+})) as CSSProperties[];
+// 혜성이 지나간 테두리 위 반짝이: 각도(°)와 혜성이 그 자리를 지나는 시각
+const SPARKS = Array.from({ length: 24 }, (_, i) => {
+  const a = -14 + (28 * i) / 23 + (rand(i, 7) - 0.5) * 0.9;
+  return { '--a': `${a}deg`, '--h': `${1 + rand(i, 6) * 16}px`, '--d': `${0.36 + ((a + 14.5) / 29) * 0.36}s` } as CSSProperties;
+});
 
 export default function HeroSection() {
-  const [loaded, setLoaded] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduced = usePrefersReducedMotion();
+  const [paused, setPaused] = useState(false);
 
+  // 계속 반짝이는 별은 토글(WCAG 2.2.2), 화면 밖, 숨긴 탭에서 멈춘다
   useEffect(() => {
-    const t = setTimeout(() => setLoaded(true), 100);
-    return () => clearTimeout(t);
-  }, []);
+    const el = sectionRef.current;
+    if (!el) return;
+    let offscreen = false;
+    const apply = () => {
+      el.dataset.paused = String(paused || offscreen || document.hidden);
+    };
+    const io = new IntersectionObserver(([entry]) => {
+      offscreen = !entry.isIntersecting;
+      apply();
+    });
+    io.observe(el);
+    document.addEventListener('visibilitychange', apply);
+    apply();
+    return () => {
+      io.disconnect();
+      document.removeEventListener('visibilitychange', apply);
+    };
+  }, [paused]);
 
+  // 바로 아래 섹션(D-day 띠 또는 숫자)으로: 고정 id 대신 다음 형제 요소
   const scrollToNext = () => {
-    const el = document.getElementById('stats-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    const next = sectionRef.current?.nextElementSibling;
+    if (!next) return;
+    const navbar = document.querySelector('header')?.offsetHeight ?? 0;
+    window.scrollTo({ top: next.getBoundingClientRect().top + window.scrollY - navbar, behavior: reduced ? 'auto' : 'smooth' });
   };
 
   return (
-    <section className="relative w-full h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src="https://storage.readdy-site.link/project_files/08aeba0a-a656-461b-aef6-541b167b6190/bfdcba44-9b8f-4357-bfe4-5453e8822a3a_unnamed.jpg?v=7448e40cb8b272807e00c35bf6865d92"
-          alt="투빅스 활동 사진"
-          className="w-full h-full object-cover object-top"
-        />
-        {/* Dark Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
-        <div className="absolute inset-0 bg-navy-950/30" />
+    <section ref={sectionRef} className="hero relative isolate min-h-screen overflow-hidden" style={{ minHeight: 'max(100svh, 600px)' }}>
+      {/* 하늘, 별, 새벽빛 (글자 뒤) */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="hero-sky" />
+        {STARS.map((style, i) => (
+          <span key={i} className="hero-star" style={style} />
+        ))}
+        <div className="hero-rays" />
+        <div className="hero-bloom" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6">
-        <div className="max-w-3xl">
-          {/* Badge */}
-          <div
-            className={`inline-flex items-center gap-2 px-3 py-1.5 bg-navy-800/60 border border-navy-600/40 rounded-full text-xs text-navy-300 mb-6 transition-all duration-700 ${
-              loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            <span className="w-1.5 h-1.5 bg-navy-400 rounded-full animate-pulse inline-block" />
-            Since 2014 · AI·데이터분석 대표 연합 동아리 투빅스
-          </div>
+      {/* 워드마크: 행성 뒤에서 솟아오른다(행성 레이어가 DOM상 뒤에 있어 위에 그려진다) */}
+      <h1 aria-label={`${WORDMARK} 투빅스`} className="hero-word">
+        {LETTERS.map((ch, i) => (
+          <span key={i} className="hero-spread" style={{ '--d': i - MID } as CSSProperties}>
+            {/* 글로우는 ::after(data-ch)라 h1 텍스트에 섞이지 않는다 */}
+            <span className="hero-letter" data-ch={ch} style={{ '--d': i - MID, '--o': Math.abs(i - MID) } as CSSProperties}>
+              {ch}
+            </span>
+          </span>
+        ))}
+      </h1>
 
-          {/* Main Title */}
-          <h1
-            className={`font-display font-bold text-white leading-tight mb-4 transition-all duration-700 delay-100 ${
-              loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
-            <span className="block text-4xl md:text-6xl lg:text-7xl">큰 사람이 될</span>
-            <span className="block text-4xl md:text-6xl lg:text-7xl gradient-text mt-1">준비가 되셨나요?</span>
-          </h1>
-
-          {/* Sub Copy */}
-          <p
-            className={`text-gray-300 text-base md:text-lg mb-8 leading-relaxed max-w-xl transition-all duration-700 delay-200 ${
-              loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
-            2014년부터 이어온 AI·데이터분석 대표 연합 동아리 투빅스.<br />
-            함께 배우고, 만들고, 성장합니다.
-          </p>
-
-          {/* CTA Buttons */}
-          <div
-            className={`flex flex-col sm:flex-row gap-3 transition-all duration-700 delay-300 ${
-              loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
-            <Link
-              to="/recruiting"
-              className="px-8 py-3.5 bg-navy-600 hover:bg-navy-500 text-white font-semibold rounded-full text-sm transition-all duration-300 text-center whitespace-nowrap"
-            >
-              지원하기
-            </Link>
-            <button
-              onClick={scrollToNext}
-              className="px-8 py-3.5 border border-white/30 hover:border-white/60 text-white font-medium rounded-full text-sm transition-all duration-300 hover:bg-white/5 whitespace-nowrap cursor-pointer"
-            >
-              투빅스 알아보기
-            </button>
-          </div>
+      {/* 행성, 테두리, 혜성 */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="hero-planet">
+          <div className="hero-rim" />
+        </div>
+        <div className="hero-vignette" />
+        <div className="hero-orbit">
+          <span className="hero-comet" />
+          {SPARKS.map((style, i) => (
+            <span key={i} className="hero-spark" style={style} />
+          ))}
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-60">
-        <span className="text-xs text-gray-400 tracking-widest uppercase">Scroll</span>
-        <i className="ri-arrow-down-line text-gray-400 text-lg" />
+      {/* 행성 표면 위: 슬로건·소개·버튼 (높이 700px 이하 화면에서는 조금 위로) */}
+      <div className="absolute inset-x-0 top-[70.2%] flex [@media(max-height:700px)]:top-[66%] flex-col items-center px-4 text-center">
+        <p className="hero-fade bg-gradient-to-r from-navy-100 to-navy-50 bg-clip-text text-[clamp(1.35rem,2.4vw,2.1rem)] font-extrabold leading-[1.2] tracking-[-0.02em] text-transparent [font-family:'Noto_Sans_KR',Inter,sans-serif] [--at:2.8s]">
+          큰 사람이 될 준비가 되셨나요?
+        </p>
+        <p className="hero-fade mt-2.5 break-keep text-[15px] leading-relaxed text-gray-300 md:text-base [--at:3s]">
+          2014년부터 이어온 AI·데이터분석 대표 연합 동아리 투빅스.
+          <br />
+          함께 배우고, 만들고, 성장합니다.
+        </p>
+        <div className="hero-fade mt-6 flex gap-3 [--at:3.3s]">
+          <Link
+            to="/recruiting"
+            className="whitespace-nowrap rounded-full bg-navy-50 px-[26px] py-3.5 text-sm font-bold text-navy-950 transition-colors hover:bg-white sm:px-[34px] sm:text-[15px]"
+          >
+            지원하기
+          </Link>
+          <button
+            type="button"
+            onClick={scrollToNext}
+            className="cursor-pointer whitespace-nowrap rounded-full border border-white/30 px-[26px] py-3.5 text-sm font-bold text-white transition-colors hover:border-white/60 hover:bg-white/5 sm:px-[34px] sm:text-[15px]"
+          >
+            투빅스 알아보기
+          </button>
+        </div>
       </div>
+
+      {/* 별 반짝임 멈춤 (reduced motion이면 움직이는 것이 없어 숨김) */}
+      <button
+        type="button"
+        onClick={() => setPaused((v) => !v)}
+        className="absolute bottom-3 right-3 z-[5] inline-flex items-center gap-1.5 rounded-full border border-white/[0.16] bg-navy-950/50 px-3 py-1.5 text-xs text-gray-300 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-300 motion-reduce:hidden sm:bottom-5 sm:right-5 [@media(max-height:700px)]:bottom-auto [@media(max-height:700px)]:top-[72px]"
+      >
+        <i aria-hidden="true" className={paused ? 'ri-play-fill' : 'ri-pause-fill'} />
+        {paused ? '배경 재생' : '배경 멈춤'}
+      </button>
     </section>
   );
 }

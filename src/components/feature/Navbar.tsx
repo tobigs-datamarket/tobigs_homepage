@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { WORDMARK } from '@/config/brand';
+import { EXTERNAL_PROJECT_URL } from '@/config/links';
 
 interface DropdownItem {
   label: string;
@@ -12,8 +14,6 @@ interface NavItem {
   path?: string;
   dropdown?: DropdownItem[];
 }
-
-const EXTERNAL_PROJECT_URL = 'https://great-wholesaler-9e1.notion.site/TOBIG-s-3cb02c1ed3668286a24d015ba69029fc';
 
 const navItems: NavItem[] = [
   {
@@ -85,13 +85,8 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
-          <img
-            src="https://static.readdy.ai/image/3d684be57ac9d3c5f5a6f09d6e1e16dd/0e3510c4835073ce61a922f30b65e40b.png"
-            alt="TOBIG's Logo"
-            className="h-8 md:h-10 w-auto object-contain"
-          />
-          <span className="font-display font-bold text-white text-lg md:text-xl tracking-wide">
-            TOBIG&apos;s
+          <span className="font-sans font-black text-white text-lg md:text-xl tracking-[-0.03em]">
+            {WORDMARK}
           </span>
         </Link>
 
