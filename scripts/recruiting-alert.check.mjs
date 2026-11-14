@@ -89,6 +89,16 @@ function load({ src = SRC, quota = 100 } = {}) {
   s.ctx.sendRecruitingAlert();
   assert.deepEqual(s.mails().map((m) => m.to), ['a@x.com', 'b@x.com']);
   assert.ok(s.mails().every((m) => m.replyTo === 'datamarket.tobigs@gmail.com' && m.name && m.body.includes('/recruiting')));
+  // HTML 본문: 텍스트 본문과 줄 구성이 똑같고(줄마다 <br>), 주소 줄은 링크, 특수문자는 이스케이프
+  const m = s.mails()[0];
+  const htmlLines = m.htmlBody.replace(/^<div[^>]*>\n|\n<\/div>$/g, '').split('<br>\n');
+  assert.equal(htmlLines.length, m.body.split('\n').length);
+  assert.equal(htmlLines[3], '기다려 주신 투빅스 27기 리크루팅이 시작되어');
+  assert.equal(htmlLines[4], '신청해주신 이메일로 모집을 시작하였음을 알려드립니다.');
+  assert.equal(htmlLines[8], '모집 안내:');
+  assert.match(htmlLines[9], /^<a href="https:\/\/www\.datamarket\.ai\.kr\/recruiting"/);
+  assert.match(htmlLines[11], /^<a href="https:\/\/docs\.google\.com\/forms\/.+viewform\?usp=dialog"/);
+  assert.ok(m.htmlBody.includes('TOBIG&#39;s') || m.htmlBody.includes("TOBIG's"));
   const st = s.status();
   assert.match(st[0], /^27기 발송 /);
   assert.match(st[1], /^27기 발송 /);

@@ -134,36 +134,55 @@ function run_(sheetName) {
   }
 }
 
+/**
+ * 메일 문구. 아래 배열의 한 줄 = 메일의 한 줄, '' = 빈 줄. ${...} 는 위 상수에서 자동으로 채워진다.
+ * 일반 텍스트 메일은 Gmail이 일정 폭(한글은 2칸으로 계산)마다 멋대로 줄을 바꾸므로, 같은 줄 구성을 HTML로도 보내
+ * 여기서 나눈 그대로 줄이 바뀌게 한다. 다만 휴대폰처럼 화면이 좁으면 긴 줄은 화면 폭에서 한 번 더 접힌다.
+ */
 function message_(to) {
   const deadline = Utilities.formatDate(new Date(DEADLINE), TZ, 'M월 d일 HH:mm');
+  const lines = [
+    "안녕하세요, 데이터·AI 연합 동아리 투빅스(TOBIG's)입니다.",
+    '',
+    '모집 알림을 신청해 주셔서 감사합니다.',
+    `기다려 주신 투빅스 ${COHORT} 리크루팅이 시작되어`,
+    '신청해주신 이메일로 모집을 시작하였음을 알려드립니다.',
+    '',
+    `서류 접수 마감: ${deadline}`,
+    '',
+    '모집 안내:',
+    `${SITE_URL}/recruiting`,
+    '지원 링크:',
+    APPLY_FORM_URL,
+    '',
+    '데이터·AI를 함께 배우고 성장하고 싶은 여러분의',
+    '많은 관심과 지원을 기다립니다.',
+    '',
+    '감사합니다.',
+    '투빅스 드림',
+    '',
+    '—',
+    '',
+    '이 메일은 투빅스 홈페이지에서 모집 알림을 신청하신 분께 1회 자동 발송됩니다.',
+    '신청 시 입력하신 이메일 주소는 이번 모집 종료 후 파기됩니다.',
+  ];
   return {
     to,
     name: SENDER_NAME,
     replyTo: CLUB_EMAIL,
     subject: `[투빅스] ${COHORT} 신입 부원 모집 안내`,
-    // 한 줄 = 메일의 한 줄, '' = 빈 줄. ${...} 는 위 상수에서 자동으로 채워진다.
-    body: [
-      "안녕하세요, 데이터·AI 연합 동아리 투빅스(TOBIG's)입니다.",
-      '',
-      '모집 알림을 신청해 주셔서 감사합니다.',
-      `기다려 주신 투빅스 ${COHORT} 리크루팅이 시작되어 신청해주신 이메일로 모집을 시작하였음을 알려드립니다.`,
-      '',
-      `서류 접수 마감: ${deadline}`,
-      '',
-      `모집 안내: ${SITE_URL}/recruiting`,
-      `지원 링크: ${APPLY_FORM_URL}`,
-      '',
-      '데이터·AI를 함께 배우고 성장하고 싶은 여러분의 많은 관심과 지원을 기다립니다.',
-      '',
-      '감사합니다.',
-      '투빅스 드림',
-      '',
-      '—',
-      '',
-      '이 메일은 투빅스 홈페이지에서 모집 알림을 신청하신 분께 1회 자동 발송됩니다.',
-      '신청 시 입력하신 이메일 주소는 이번 모집 종료 후 파기됩니다.',
-    ].join('\n'),
+    body: lines.join('\n'), // HTML을 못 여는 메일 프로그램용
+    htmlBody: html_(lines),
   };
+}
+
+/** 줄 배열 → 줄마다 <br> 로 끊은 HTML. 'http' 로 시작하는 줄은 그 주소 그대로 링크로 만든다. */
+function html_(lines) {
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const body = lines
+    .map((l) => (/^https?:\/\//.test(l) ? `<a href="${esc(l)}" style="color:#1a56db;word-break:break-all">${esc(l)}</a>` : esc(l)))
+    .join('<br>\n');
+  return `<div style="font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:14px;line-height:1.7;color:#222;word-break:keep-all">\n${body}\n</div>`;
 }
 
 /** 사이트(src/utils/dday.ts isRecruitingOpen)와 같은 규칙: START 이상, DEADLINE(23:59:59) + 1초 미만. */
