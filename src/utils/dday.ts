@@ -28,7 +28,7 @@ const parts = (format: Intl.DateTimeFormat, t: number) =>
 
 const parse = (iso: string) => (iso ? Date.parse(iso) : NaN);
 
-function kstYmd(t: number) {
+export function kstYmd(t: number) {
   const p = parts(ymdFormat, t);
   return { y: Number(p.year), m: Number(p.month), d: Number(p.day) };
 }

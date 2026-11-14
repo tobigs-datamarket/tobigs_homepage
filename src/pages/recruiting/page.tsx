@@ -3,19 +3,23 @@ import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
 import { RECRUITING_DDAY } from '@/config/recruiting';
-import { isRecruitingOpen } from '@/utils/dday';
+import { isRecruitingOpen, kstYmd } from '@/utils/dday';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 const RECRUITING_ALERT_ENDPOINT = import.meta.env.VITE_RECRUITING_ALERT_ENDPOINT as string | undefined;
+// 기수·날짜는 src/config/recruiting.ts 에서만 바꾼다.
+const { cohort, schedule } = RECRUITING_DDAY;
 
-const steps = [
-  { step: 'STEP 1', title: '서류 지원(~12/27)', icon: 'ri-file-text-line', desc: '구글폼을 통해 지원서 제출' },
-  { step: 'STEP 2', title: '서류 결과 안내(12/30)', icon: 'ri-mail-check-line', desc: '서류 심사 결과 문자 발송' },
-  { step: 'STEP 3', title: '면접 심사(1/3~5)', icon: 'ri-user-voice-line', desc: '다대다 면접 (약 30분 소요)' },
-  { step: 'STEP 4', title: '최종 발표(1/6)', icon: 'ri-trophy-line', desc: '최종 합격자 발표' },
-];
-
+// 모집 기간 중에만 그려진다(그때는 deadline 이 올바른 날짜임이 보장됨).
 function SeasonView() {
+  const end = kstYmd(Date.parse(RECRUITING_DDAY.deadline));
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const steps = [
+    { step: 'STEP 1', title: `서류 지원(~${end.m}/${end.d})`, icon: 'ri-file-text-line', desc: '구글폼을 통해 지원서 제출' },
+    { step: 'STEP 2', title: `서류 결과 안내(${schedule.docResult})`, icon: 'ri-mail-check-line', desc: '서류 심사 결과 문자 발송' },
+    { step: 'STEP 3', title: `면접 심사(${schedule.interview})`, icon: 'ri-user-voice-line', desc: '다대다 면접 (약 30분 소요)' },
+    { step: 'STEP 4', title: `최종 발표(${schedule.final})`, icon: 'ri-trophy-line', desc: '최종 합격자 발표' },
+  ];
   return (
     <div className="pt-24 md:pt-32 pb-20">
       <div className="max-w-4xl mx-auto px-4 md:px-6">
@@ -27,10 +31,10 @@ function SeasonView() {
           </span>
           <h1 className="font-display font-bold text-3xl md:text-5xl text-white mb-4 leading-tight">
             투빅스와 함께 <span className="gradient-text">큰 사람</span>으로 성장할<br />
-            <span className="text-navy-400 font-bold">27기</span>를 모집합니다
+            <span className="text-navy-400 font-bold">{cohort}</span>를 모집합니다
           </h1>
           <p className="text-gray-400 text-base">
-            모집 기간: ~2026.12.27 마감
+            모집 기간: ~{end.y}.{pad(end.m)}.{pad(end.d)} 마감
           </p>
         </div>
 
@@ -38,7 +42,7 @@ function SeasonView() {
         <div className="relative rounded-2xl overflow-hidden mb-12 h-48 md:h-64">
           <img
             src="https://readdy.ai/api/search-image?query=data%20AI%20university%20students%20team%20working%20together%20laptop%20presentation%20collaborative%20modern%20dark%20office%20environment%20professional%20atmosphere%20tech%20club&width=1200&height=400&seq=recruit001&orientation=landscape"
-            alt="투빅스 26기 모집"
+            alt={`투빅스 ${cohort} 모집`}
             className="w-full h-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-navy-950/80 via-navy-950/40 to-transparent" />
@@ -218,7 +222,7 @@ export default function RecruitingPage() {
     '@type': 'WebPage',
     name: '리쿠르팅 | TOBIG\'s 투빅스',
     description: isRecruitingSeason
-      ? '투빅스 27기 신규 동아리원 모집 페이지입니다. AI·데이터분석 대표 연합 동아리에서 함께 성장할 동료를 모집합니다.'
+      ? `투빅스 ${cohort} 신규 동아리원 모집 페이지입니다. AI·데이터분석 대표 연합 동아리에서 함께 성장할 동료를 모집합니다.`
       : '투빅스 리쿠르팅 페이지입니다. 현재 모집 기간이 아니며, 다음 모집 소식을 이메일로 받아보실 수 있습니다.',
     url: `${SITE_URL}/recruiting`,
     inLanguage: 'ko',
@@ -234,12 +238,12 @@ export default function RecruitingPage() {
       <SEO
         title={
           isRecruitingSeason
-            ? '리쿠르팅 - 27기 모집 중 | TOBIG\'s 투빅스'
+            ? `리쿠르팅 - ${cohort} 모집 중 | TOBIG's 투빅스`
             : '리쿠르팅 | TOBIG\'s 투빅스'
         }
         description={
           isRecruitingSeason
-            ? '투빅스 27기 신규 동아리원 모집 중입니다. AI·데이터분석 대표 연합 동아리에서 함께 성장할 동료를 찾습니다. 지금 지원하세요!'
+            ? `투빅스 ${cohort} 신규 동아리원 모집 중입니다. AI·데이터분석 대표 연합 동아리에서 함께 성장할 동료를 찾습니다. 지금 지원하세요!`
             : '투빅스 리쿠르팅 페이지입니다. 다음 모집 소식을 이메일로 받아보실 수 있습니다.'
         }
         keywords="투빅스 모집, TOBIG's 리쿠르팅, 데이터 동아리 지원, AI 동아리 모집, 대학생 연합 동아리"
