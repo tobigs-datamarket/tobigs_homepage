@@ -51,6 +51,14 @@ export function getDdayState(now: number, cfg: DdayConfig): DdayState {
   return days > 0 ? { kind: 'countdown', days } : { kind: 'today' };
 }
 
+/**
+ * 서류 모집 중인지(리쿠르팅 페이지 지원 화면 여부). enabled와 무관하게 startAt·deadline만 본다.
+ * deadline은 23:59:59로 쓰므로 +1초 = 다음날 00:00(자정)까지 true. 날짜가 비었거나 틀리면 false.
+ */
+export function isRecruitingOpen(now: number, cfg: Pick<DdayConfig, 'startAt' | 'deadline'>): boolean {
+  return now >= parse(cfg.startAt) && now < parse(cfg.deadline) + 1000;
+}
+
 /** 상태가 바뀔 수 있는 다음 시각: 다음 KST 자정, 시작, 마감, 숨김 중 now 이후 가장 이른 것. */
 export function nextBoundary(now: number, cfg: DdayConfig): number {
   const { y, m, d } = kstYmd(now);

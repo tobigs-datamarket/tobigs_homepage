@@ -2,13 +2,11 @@ import { useState } from 'react';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
+import { RECRUITING_DDAY } from '@/config/recruiting';
+import { isRecruitingOpen } from '@/utils/dday';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 const RECRUITING_ALERT_ENDPOINT = import.meta.env.VITE_RECRUITING_ALERT_ENDPOINT as string | undefined;
-
-// Toggle this to switch between season and off-season view
-// In production, this would be managed by the admin
-const IS_RECRUITING_SEASON = false;
 
 const steps = [
   { step: 'STEP 1', title: '서류 지원(~12/27)', icon: 'ri-file-text-line', desc: '구글폼을 통해 지원서 제출' },
@@ -134,7 +132,9 @@ function OffSeasonView() {
         body: formData.toString(),
       });
 
-      if (res.ok) {
+      // Apps Script는 오류가 나도 HTTP 200을 줄 수 있어서 본문의 ok까지 확인한다 (scripts/recruiting-alert.gs)
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.ok === true) {
         setSubmitted(true);
       } else {
         setError('제출 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -187,6 +187,13 @@ function OffSeasonView() {
                 {submitting ? '신청 중...' : '알림 신청'}
               </button>
             </div>
+            <label className="flex items-start gap-2 mb-3 text-gray-400 text-xs leading-relaxed cursor-pointer">
+              <input type="checkbox" required disabled={submitting} className="mt-0.5 accent-navy-600" />
+              <span>
+                [필수] 개인정보 수집·이용 동의 — 수집 항목: 이메일 주소 / 목적: 다음 기수 모집 안내 메일 1회 발송 /
+                보유 기간: 해당 모집 종료 후 파기. 동의하지 않으시면 알림 신청을 할 수 없습니다.
+              </span>
+            </label>
             {error && <p className="text-red-400 text-xs">{error}</p>}
             <p className="text-gray-500 text-xs mt-3">
               <i className="ri-information-line mr-1" />
@@ -206,11 +213,13 @@ function OffSeasonView() {
 }
 
 export default function RecruitingPage() {
+  // 모집 기간은 src/config/recruiting.ts 의 startAt ~ deadline 으로만 정한다.
+  const isRecruitingSeason = isRecruitingOpen(Date.now(), RECRUITING_DDAY);
   const recruitingSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: '리쿠르팅 | TOBIG\'s 투빅스',
-    description: IS_RECRUITING_SEASON
+    description: isRecruitingSeason
       ? '투빅스 27기 신규 동아리원 모집 페이지입니다. AI·데이터분석 대표 연합 동아리에서 함께 성장할 동료를 모집합니다.'
       : '투빅스 리쿠르팅 페이지입니다. 현재 모집 기간이 아니며, 다음 모집 소식을 이메일로 받아보실 수 있습니다.',
     url: `${SITE_URL}/recruiting`,
@@ -226,12 +235,12 @@ export default function RecruitingPage() {
     <div className="min-h-screen bg-dark-900">
       <SEO
         title={
-          IS_RECRUITING_SEASON
+          isRecruitingSeason
             ? '리쿠르팅 - 27기 모집 중 | TOBIG\'s 투빅스'
             : '리쿠르팅 | TOBIG\'s 투빅스'
         }
         description={
-          IS_RECRUITING_SEASON
+          isRecruitingSeason
             ? '투빅스 27기 신규 동아리원 모집 중입니다. AI·데이터분석 대표 연합 동아리에서 함께 성장할 동료를 찾습니다. 지금 지원하세요!'
             : '투빅스 리쿠르팅 페이지입니다. 다음 모집 소식을 이메일로 받아보실 수 있습니다.'
         }
@@ -241,7 +250,7 @@ export default function RecruitingPage() {
       />
       <Navbar />
       <main>
-        {IS_RECRUITING_SEASON ? <SeasonView /> : <OffSeasonView />}
+        {isRecruitingSeason ? <SeasonView /> : <OffSeasonView />}
       </main>
       <Footer />
     </div>

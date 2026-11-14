@@ -2,6 +2,8 @@
 // - 시각은 반드시 한국 시간 오프셋(+09:00)을 붙여 쓴다.
 // - 마감(deadline)은 마감일 23:59:59로 쓴다. 다음날 00:00으로 쓰면 D-DAY가 사라진다.
 // - 화면의 날짜·요일(예: 12.27 (일) 23:59)은 아래 값에서 자동으로 계산된다.
+// - startAt~deadline 동안 리쿠르팅 페이지가 지원 화면으로 바뀐다. 이 두 값을 바꾸면 모집 알림 메일
+//   Apps Script(scripts/recruiting-alert.gs 와 구글에 붙여넣은 실제 스크립트)의 START·DEADLINE도 똑같이 바꾼다.
 export const RECRUITING_DDAY = {
   enabled: true,
   // 지원 시작: 이 시각부터 띠가 보인다. 비워 두면('') 띠를 띄우지 않는다.
