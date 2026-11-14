@@ -8,8 +8,9 @@
  * 시트 탭: [신청] [테스트]  — 둘 다 1행 머리글 "신청시각 | 이메일 | 상태", 2행부터 데이터.
  *   상태가 빈칸 = 아직 안 보냄. 발송 중(매일 10~11시)에는 시트 정렬·행 삽입/삭제 금지(행 번호로 상태를 쓴다).
  *
- * 매 기수 바꿀 곳: COHORT, START, DEADLINE 세 줄.
- *   START, DEADLINE 은 src/config/recruiting.ts 의 startAt, deadline 과 글자 그대로 같게 쓴다.
+ * 매 기수 바꿀 곳: COHORT, START, DEADLINE, APPLY_FORM_URL 네 줄.
+ *   START, DEADLINE, APPLY_FORM_URL 은 src/config/recruiting.ts 의 startAt, deadline, applyFormUrl 과 글자 그대로 같게 쓴다.
+ *   메일 제목·본문 문구는 아래 message_ 함수에서 고친다.
  *   메일은 START 이후 처음 도는 매일 10~11시(서울) 트리거에서 나간다. 그래서 START 는 그날 10시 이전이어야 한다.
  *
  * 손으로 실행하는 함수: dryRun(발송 없이 점검) · testRun([테스트] 탭에 실제 발송) · setupTrigger(트리거 1개 설치)
@@ -17,6 +18,7 @@
 const COHORT = '27기';
 const START = '2026-11-30T00:00:00+09:00';
 const DEADLINE = '2026-12-27T23:59:59+09:00';
+const APPLY_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScpNmZNDXAD7k2TiWeNr4_Cl25fQZl2aYtRhlHwNt5Jakc61w/viewform?usp=dialog';
 
 const SITE_URL = 'https://www.datamarket.ai.kr';
 const CLUB_EMAIL = 'datamarket.tobigs@gmail.com';
@@ -138,16 +140,28 @@ function message_(to) {
     to,
     name: SENDER_NAME,
     replyTo: CLUB_EMAIL,
-    subject: `[투빅스] ${COHORT} 모집이 시작되었습니다`,
+    subject: `[투빅스] ${COHORT} 신입 부원 모집 안내`,
+    // 한 줄 = 메일의 한 줄, '' = 빈 줄. ${...} 는 위 상수에서 자동으로 채워진다.
     body: [
       "안녕하세요, 데이터·AI 연합 동아리 투빅스(TOBIG's)입니다.",
       '',
-      `알림을 신청해 주신 투빅스 ${COHORT} 모집이 시작되었습니다.`,
-      `· 서류 마감: ${deadline}`,
-      `· 모집 안내 및 지원: ${SITE_URL}/recruiting`,
+      '모집 알림을 신청해 주셔서 감사합니다.',
+      `기다려 주신 투빅스 ${COHORT} 리크루팅이 시작되어 신청해주신 이메일로 모집을 시작하였음을 알려드립니다.`,
       '',
-      '이 메일은 투빅스 홈페이지에서 모집 알림을 신청하셔서 1회 발송되었습니다.',
-      '신청하신 이메일 주소는 이번 모집이 끝나면 파기합니다.',
+      `서류 접수 마감: ${deadline}`,
+      '',
+      `모집 안내: ${SITE_URL}/recruiting`,
+      `지원 링크: ${APPLY_FORM_URL}`,
+      '',
+      '데이터·AI를 함께 배우고 성장하고 싶은 여러분의 많은 관심과 지원을 기다립니다.',
+      '',
+      '감사합니다.',
+      '투빅스 드림',
+      '',
+      '—',
+      '',
+      '이 메일은 투빅스 홈페이지에서 모집 알림을 신청하신 분께 1회 자동 발송됩니다.',
+      '신청 시 입력하신 이메일 주소는 이번 모집 종료 후 파기됩니다.',
     ].join('\n'),
   };
 }

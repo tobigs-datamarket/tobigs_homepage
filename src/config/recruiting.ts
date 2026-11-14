@@ -18,4 +18,6 @@ export const RECRUITING_DDAY = {
   title: '투빅스 27기를 모집합니다',
   // 지원 버튼 링크. 사이트 안 경로('/recruiting') 또는 외부 주소('https://forms.gle/...') 모두 가능
   applyHref: '/recruiting',
+  // 리쿠르팅 페이지 "구글폼 지원하기" 버튼 링크(응답자용 주소). 모집 알림 메일 Apps Script 의 APPLY_FORM_URL 도 같이 바꾼다.
+  applyFormUrl: 'https://docs.google.com/forms/d/e/1FAIpQLScpNmZNDXAD7k2TiWeNr4_Cl25fQZl2aYtRhlHwNt5Jakc61w/viewform?usp=dialog',
 };

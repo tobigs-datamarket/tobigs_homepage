@@ -77,8 +77,7 @@ function SeasonView() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <a
-           // 여기 수정 필요 ! 27기 지원 구글 폼 
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfofq6fgll30meg5cHwLTSwCH6lFZ1QNm1UqkLvJTupLw8wIQ/viewform?usp=publish-editor"
+            href={RECRUITING_DDAY.applyFormUrl}
             target="_blank"
             rel="nofollow noreferrer"
             className="flex items-center justify-center gap-2 px-8 py-4 bg-navy-600 hover:bg-navy-500 text-white font-semibold rounded-full text-sm transition-all whitespace-nowrap"
