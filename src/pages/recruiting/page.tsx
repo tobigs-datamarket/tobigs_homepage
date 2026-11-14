@@ -190,8 +190,7 @@ function OffSeasonView() {
             <label className="flex items-start gap-2 mb-3 text-gray-400 text-xs leading-relaxed cursor-pointer">
               <input type="checkbox" required disabled={submitting} className="mt-0.5 accent-navy-600" />
               <span>
-                [필수] 개인정보 수집·이용 동의 — 수집 항목: 이메일 주소 / 목적: 다음 기수 모집 안내 메일 1회 발송 /
-                보유 기간: 해당 모집 종료 후 파기. 동의하지 않으시면 알림 신청을 할 수 없습니다.
+                [필수] 개인정보 수집·이용 동의 
               </span>
             </label>
             {error && <p className="text-red-400 text-xs">{error}</p>}
