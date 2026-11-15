@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
@@ -7,27 +8,44 @@ import { formatDeadline, isRecruitingOpen, kstYmd } from '@/utils/dday';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 const RECRUITING_ALERT_ENDPOINT = import.meta.env.VITE_RECRUITING_ALERT_ENDPOINT as string | undefined;
-// 기수·날짜는 src/config/recruiting.ts 에서만 바꾼다. 사진 뒤 큰 숫자도 cohort('27기')에서 숫자만 뽑아 쓴다.
+// 기수·날짜는 src/config/recruiting.ts 에서만 바꾼다. 곰이 든 팻말의 숫자도 cohort('27기')에서 숫자만 뽑아 쓴다.
 const { cohort, schedule } = RECRUITING_DDAY;
 const cohortNo = cohort.replace(/\D/g, '');
 
-// 강의실은 어둠 속으로, 사람들만 조명 아래에. 세 겹: 어두운 강의실(group.webp) → 큰 기수 숫자 → 사람만 오린 사진(group-people.webp).
-// 두 사진은 같은 크기(1218×537)여야 겹친다. group.webp 를 바꾸면 scripts/cutout_people.py 로 group-people.webp 도 다시 만든다.
-const fade = (top: string, bottom: string, side: string): CSSProperties => ({
-  maskImage: `linear-gradient(to bottom, ${top}, #000 ${bottom}, transparent), linear-gradient(to right, transparent, #000 ${side}, #000 calc(100% - ${side}), transparent)`,
+// 아래쪽 '함께해 온 사람들' 단체사진: 반투명, 네 가장자리를 페이지 배경으로 녹여 네모 테두리를 없앤다.
+const PHOTO_FADE: CSSProperties = {
+  maskImage:
+    'linear-gradient(to bottom, transparent, #000 20%, #000 58%, transparent 94%), linear-gradient(to right, transparent, #000 12%, #000 88%, transparent)',
   maskComposite: 'intersect',
-});
-// 강의실: 위·아래·양옆을 페이지 배경으로 녹여 사진의 네모 테두리를 없앤다
-const ROOM_FADE = fade('transparent, #000 22%', '68%', '7%');
-// 사람: 머리는 또렷하게, 무릎 아래만 어둠으로
-const PEOPLE_FADE = fade('#000', '66%', '4%');
-// 가운데는 그대로, 바깥(화이트보드·벽·바닥)으로 갈수록 남색 어둠
-const SPOTLIGHT = 'radial-gradient(ellipse 58% 72% at 50% 58%, transparent 30%, rgb(4 11 28 / 0.82))';
+};
+// 곡괭이가 팻말 오른쪽 위 모서리를 찍을 때 튀는 불꽃: 날아가는 방향(px). 움직임은 index.css 의 .miner-*
+const SPARKS = [[-26, -30], [-6, -42], [16, -34], [32, -14], [26, 6]].map(
+  ([dx, dy]) => ({ '--dx': `${dx}px`, '--dy': `${dy}px` }) as CSSProperties,
+);
+// 곰 둘레에서 반짝이는 별(원래 로고의 별 장식 자리). 곰 그림에서는 별을 빼서, 곰이 움직여도 별은 제자리에 있다.
+const STARS = [
+  { left: '-9%', top: '44%', size: 'text-2xl', delay: '0s' },
+  { left: '-1%', top: '64%', size: 'text-sm', delay: '-0.9s' },
+  { left: '93%', top: '8%', size: 'text-lg', delay: '-1.6s' },
+];
+
+// 지원 버튼: 첫 화면과 맨 아래에 같은 모양으로 두 번 나온다
+function ApplyLink() {
+  return (
+    <a
+      href={RECRUITING_DDAY.applyFormUrl}
+      target="_blank"
+      rel="nofollow noreferrer"
+      className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-navy-50 px-8 py-3.5 text-[15px] font-bold text-navy-950 transition-colors hover:bg-white"
+    >
+      구글폼 지원하기
+      <i className="ri-arrow-right-up-line" />
+    </a>
+  );
+}
 
 // 모집 기간 중에만 그려진다(그때는 deadline 이 올바른 날짜임이 보장됨).
 function SeasonView() {
-  // 숫자는 사람 레이어가 뜬 뒤에 보인다(먼저 뜨면 잠깐 얼굴을 가린다)
-  const [peopleReady, setPeopleReady] = useState(false);
   const end = kstYmd(Date.parse(RECRUITING_DDAY.deadline));
   const deadline = formatDeadline(RECRUITING_DDAY.deadline);
   const steps = [
@@ -37,44 +55,42 @@ function SeasonView() {
     { date: schedule.final, title: '최종 발표', desc: '최종 합격자 발표' },
   ];
   return (
-    <div className="relative overflow-hidden pt-20 pb-24 md:pt-24">
-      {/* 사진 뒤로 은은하게 번지는 남색 빛 */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[900px] bg-[radial-gradient(ellipse_55%_45%_at_50%_38%,rgb(30_58_120/0.32),transparent)]"
-      />
+    <div className="relative overflow-hidden pb-24">
+      <div className="relative mx-auto max-w-4xl px-4 pt-24 md:pt-28">
+        {/* 곰 뒤 빛: 남색 빛 + 헤드램프의 따뜻한 빛 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[1000px] -translate-x-1/2 bg-[radial-gradient(circle_150px_at_50%_25%,rgb(255_214_110/0.14),transparent_70%),radial-gradient(ellipse_44%_40%_at_50%_38%,rgb(59_94_166/0.45),transparent_70%)]"
+        />
 
-      {/* 무대 (크기는 무대 폭 기준 cqw): 어두운 강의실 → 기수 숫자 → 사람들 */}
-      <div className="relative mx-auto max-w-4xl [container-type:inline-size]">
-        <div className="relative isolate">
-          <p
-            aria-hidden="true"
-            className={`relative z-10 select-none bg-gradient-to-b from-navy-100 via-navy-300 to-navy-600 bg-clip-text pr-[0.05em] text-center font-display font-black leading-none tracking-[-0.05em] text-transparent transition-opacity duration-700 ${
-              peopleReady ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{ fontSize: '27cqw', marginBottom: '-20cqw' }}
-          >
-            {cohortNo}
-          </p>
-          <div aria-hidden="true" className="relative aspect-[1218/537]" style={ROOM_FADE}>
-            <img
-              src="/images/recruiting/group.webp"
-              alt=""
-              className="absolute inset-0 h-full w-full [filter:brightness(0.5)_saturate(0.7)]"
-            />
-            <div className="absolute inset-0" style={{ background: SPOTLIGHT }} />
+        {/* 광부 곰이 기수 팻말을 곡괭이로 두드린다 (장식: 같은 내용이 제목에 있다) */}
+        <div aria-hidden="true" className="relative mx-auto w-[200px] select-none md:w-[260px]">
+          <div className="relative">
+            <img src="/images/recruiting/bear.webp" alt="" width={560} height={512} className="miner-swing relative w-full" />
+            {STARS.map((s) => (
+              <i
+                key={s.top}
+                className={`ri-sparkling-2-fill miner-twinkle absolute text-yellow-200 ${s.size}`}
+                style={{ left: s.left, top: s.top, animationDelay: s.delay }}
+              />
+            ))}
+            <span className="absolute left-[88%] top-[93%] z-20">
+              {SPARKS.map((style, i) => (
+                <span key={i} className="miner-spark" style={style} />
+              ))}
+            </span>
           </div>
-          <img
-            src="/images/recruiting/group-people.webp"
-            alt={`투빅스 ${cohort} 모집`}
-            onLoad={() => setPeopleReady(true)}
-            className="absolute inset-x-0 bottom-0 z-20 w-full"
-            style={PEOPLE_FADE}
-          />
+          <div className="miner-sign relative z-10 mx-auto -mt-[7%] w-[80%] rounded-2xl border border-white/20 bg-gradient-to-b from-navy-500 to-navy-700 pb-2.5 pt-2 text-center shadow-[0_18px_40px_rgb(0_0_0/0.55)] md:rounded-[22px] md:pb-3 md:pt-2.5">
+            <p className="font-display font-black leading-none tracking-[-0.04em] text-white">
+              <span className="text-[52px] md:text-[68px]">{cohortNo}</span>
+              <span className="ml-1 text-[22px] md:text-[28px]">기</span>
+            </p>
+            <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.28em] text-navy-100 md:text-[11px]">Recruiting</p>
+          </div>
         </div>
 
-        {/* 제목·버튼: 사진의 흐려진 바닥 위에서 시작한다(얼굴은 가리지 않음) */}
-        <div className="relative -mt-[4%] px-4 text-center">
+        {/* 제목·버튼 */}
+        <div className="relative mt-8 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-navy-600/40 bg-navy-900/70 px-3 py-1.5 text-xs text-navy-200 backdrop-blur">
             <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-green-400" />
             모집 진행 중 · {deadline.date} {deadline.time} 마감
@@ -82,17 +98,9 @@ function SeasonView() {
           <h1 className="mt-5 break-keep font-display text-[1.75rem] font-bold leading-snug text-white md:text-4xl">
             투빅스와 함께 <span className="gradient-text">큰 사람</span>으로 성장할 {cohort}를 모집합니다
           </h1>
-          <p className="mt-3 text-base text-gray-400">AI·데이터분석을 함께 공부할 동료를 찾습니다</p>
+          <p className="mt-3 text-base text-gray-400">함께 AI·데이터분석을 공부합시다.</p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <a
-              href={RECRUITING_DDAY.applyFormUrl}
-              target="_blank"
-              rel="nofollow noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-navy-50 px-8 py-3.5 text-[15px] font-bold text-navy-950 transition-colors hover:bg-white"
-            >
-              구글폼 지원하기
-              <i className="ri-arrow-right-up-line" />
-            </a>
+            <ApplyLink />
             <a
               href="https://pf.kakao.com/_QyxiDxb"
               target="_blank"
@@ -131,6 +139,33 @@ function SeasonView() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* 함께해 온 사람들: 반투명 단체사진 + 마무리 지원 버튼 (문구는 사진의 흐려진 아래쪽에 걸친다) */}
+      <section className="relative mx-auto mt-28 max-w-5xl md:mt-32">
+        <h2 className="mb-2 text-center text-xs font-semibold uppercase tracking-widest text-navy-400">투빅스 사람들</h2>
+        <img
+          src="/images/recruiting/group.webp"
+          alt="투빅스 동아리원 단체 사진"
+          width={1218}
+          height={537}
+          loading="lazy"
+          className="w-full opacity-[0.45] [filter:saturate(0.85)]"
+          style={PHOTO_FADE}
+        />
+        <div className="relative -mt-[3%] px-5 text-center md:-mt-[9%]">
+          <p className="break-keep font-display text-2xl font-bold text-white md:text-4xl">저희와 함께할 {cohort}분들을 모집합니다!</p>
+          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            <ApplyLink />
+            <Link
+              to="/faq"
+              className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/20 px-8 py-3.5 text-[15px] font-semibold text-gray-200 transition-colors hover:border-white/40 hover:bg-white/5"
+            >
+              자주 묻는 질문
+              <i className="ri-arrow-right-line" />
+            </Link>
+          </div>
+        </div>
       </section>
     </div>
   );

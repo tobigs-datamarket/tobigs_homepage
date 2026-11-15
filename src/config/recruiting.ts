@@ -7,7 +7,7 @@
 //
 // 새 기수 때 바꿀 곳: COHORT, startAt, deadline, hideAfter, schedule, applyFormUrl  (+ Apps Script 의 같은 값들)
 
-// 기수. 사이트에 나오는 'N기' 글자(D-day 띠, 리쿠르팅 페이지 제목·사진 뒤 큰 숫자·이미지 설명·검색 설명)가 모두 이 값에서 나온다.
+// 기수. 사이트에 나오는 'N기' 글자(D-day 띠, 리쿠르팅 페이지 제목·곰이 든 팻말·검색 설명)가 모두 이 값에서 나온다.
 const COHORT = '27기';
 
 export const RECRUITING_DDAY = {

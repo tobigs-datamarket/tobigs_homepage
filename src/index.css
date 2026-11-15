@@ -145,12 +145,45 @@ body {
 @keyframes hero-spark { 15% { opacity: 1; } }
 @keyframes hero-fade { from { opacity: 0; transform: translateY(10px); } }
 
+/* 리쿠르팅 첫 화면: 광부 곰의 곡괭이질(2.6초 반복). 들어 올림 → 가속하며 내리찍기(52%) → 팻말 흔들림·불꽃 → 쉬기.
+   세 애니메이션은 길이가 같아 함께 맞물린다. 회전 중심은 곰이 앉은 자리(곰 그림의 42%, 92%). */
+.miner-swing { transform-origin: 42% 92%; animation: miner-swing 2.6s infinite; }
+.miner-sign { animation: miner-hit 2.6s infinite; }
+.miner-spark {
+  position: absolute; width: 5px; height: 5px; margin: -2.5px; border-radius: 9999px; opacity: 0;
+  background: #ffe7a3; box-shadow: 0 0 6px 2px rgb(255 205 90 / 0.75);
+  animation: miner-spark 2.6s infinite;
+}
+.miner-twinkle { animation: miner-twinkle 2.2s ease-in-out infinite alternate; }
+@keyframes miner-swing {
+  0%, 22% { transform: rotate(0deg); animation-timing-function: ease-in-out; }
+  44% { transform: rotate(-10deg) translateY(-6px); animation-timing-function: cubic-bezier(0.6, 0, 1, 0.4); }
+  52% { transform: rotate(5deg) translateY(2px); animation-timing-function: ease-out; }
+  58% { transform: rotate(3.5deg) translateY(1px); animation-timing-function: ease-in-out; }
+  82%, 100% { transform: rotate(0deg); }
+}
+@keyframes miner-hit {
+  0%, 51%, 64%, 100% { transform: none; }
+  54% { transform: translateY(4px) rotate(0.8deg); }
+  58% { transform: translateY(-1px) rotate(-0.3deg); }
+}
+@keyframes miner-spark {
+  0%, 51% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  53% { opacity: 1; transform: translate(0, 0) scale(1.2); }
+  72%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.4); }
+}
+@keyframes miner-twinkle { from { opacity: 0.25; transform: scale(0.7); } to { opacity: 1; transform: scale(1.1); } }
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
   .hero *,
   .hero *::after {
+    animation: none !important;
+  }
+  /* 곰은 멈춘 기본 자세, 불꽃은 숨김(기본 opacity 0), 별은 그대로 */
+  .miner-swing, .miner-sign, .miner-spark, .miner-twinkle {
     animation: none !important;
   }
 }
