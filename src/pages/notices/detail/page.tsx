@@ -1,45 +1,134 @@
+import { Fragment, type ReactNode } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
-import { notices } from '@/mocks/notices';
+import { formatNoticeDate, useNotices } from '@/services/notices';
+import { CategoryTag, LoadError } from '@/pages/notices/page';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 
-const hasImagePlaceholder = (content: string): boolean => {
-  return content.split('\n').some((line) => /\.(png|jpg|jpeg|webp|gif)$/i.test(line.trim()));
-};
+// ── 본문 표기법 (구글 시트 content 칸) ──────────────────────────
+// "## 소제목"  /  "- 항목"(또는 *, •)  /  이미지 주소나 드라이브 공유 링크만 있는 줄 → 이미지
+// 그 밖의 줄은 문단, 빈 줄로 문단을 나눈다. 본문 속 URL은 자동으로 링크가 된다.
+type Block =
+  | { type: 'heading' | 'image'; text: string }
+  | { type: 'list'; items: string[] }
+  | { type: 'paragraph'; lines: string[] };
 
-const renderContent = (content: string, imageUrl?: string) => {
-  // 플레이스홀더가 없으면 기존 방식 (whitespace-pre-line)
-  if (!imageUrl || !hasImagePlaceholder(content)) {
-    return <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{content}</div>;
+const HEADING = /^#{1,3}\s+/;
+const LIST_ITEM = /^[-*•]\s+/;
+const URL_PATTERN = /(https?:\/\/[^\s<>()]*[^\s<>().,!?'"])/g;
+
+// 구글 드라이브 공유 링크는 이미지 주소로 바꾸고, 이미지 파일 주소는 그대로 쓴다
+function toImageSrc(line: string): string | null {
+  if (!/^(https?:\/\/|\/)\S+$/.test(line)) return null;
+  const driveId = line.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:\S*&)?id=)([\w-]+)/)?.[1];
+  if (driveId) return `https://lh3.googleusercontent.com/d/${driveId}`;
+  return /\.(png|jpe?g|gif|webp)(\?\S*)?$/i.test(line) ? line : null;
+}
+
+function toBlocks(content: string): Block[] {
+  const blocks: Block[] = [];
+  let afterBlank = true;
+  for (const raw of content.split(/\r?\n/)) {
+    const line = raw.trim();
+    const last = blocks[blocks.length - 1];
+    const imageSrc = toImageSrc(line);
+    if (!line) {
+      afterBlank = true;
+      continue;
+    }
+    if (HEADING.test(line)) blocks.push({ type: 'heading', text: line.replace(HEADING, '') });
+    else if (imageSrc) blocks.push({ type: 'image', text: imageSrc });
+    else if (LIST_ITEM.test(line)) {
+      const item = line.replace(LIST_ITEM, '');
+      if (last?.type === 'list') last.items.push(item);
+      else blocks.push({ type: 'list', items: [item] });
+    } else if (last?.type === 'paragraph' && !afterBlank) last.lines.push(line);
+    else blocks.push({ type: 'paragraph', lines: [line] });
+    afterBlank = false;
   }
+  return blocks;
+}
 
-  // 플레이스홀더가 있으면 파싱하여 이미지 삽입
-  const lines = content.split('\n');
+function linkify(text: string): ReactNode[] {
+  return text.split(URL_PATTERN).map((part, i) =>
+    i % 2 ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="break-all text-navy-300 underline decoration-navy-300/40 underline-offset-4 hover:decoration-navy-300"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    ),
+  );
+}
+
+function NoticeBody({ content }: { content: string }) {
   return (
-    <div className="text-gray-300 text-sm leading-relaxed">
-      {lines.map((line, index) => {
-        const trimmed = line.trim();
-        if (/\.(png|jpg|jpeg|webp|gif)$/i.test(trimmed)) {
-          return (
-            <div key={`img-${index}`} className="my-6 overflow-hidden rounded-lg border border-dark-600/40">
-              <img src={imageUrl} alt="공지 이미지" className="w-full h-auto object-cover" />
-            </div>
-          );
+    <div className="pt-8 text-[15px] md:text-base leading-[1.85] text-gray-300 break-keep">
+      {toBlocks(content).map((block, i) => {
+        switch (block.type) {
+          case 'heading':
+            return (
+              <h2 key={i} className="mt-10 mb-3 text-lg font-semibold text-white first:mt-0">
+                {block.text}
+              </h2>
+            );
+          case 'image':
+            return (
+              <figure key={i} className="my-8 overflow-hidden rounded-xl border border-dark-600/50">
+                <img
+                  src={block.text}
+                  alt="공지 이미지"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  className="w-full h-auto"
+                  // 링크가 잘못됐거나 공유가 꺼진 이미지는 깨진 아이콘 대신 숨긴다
+                  onError={(e) => e.currentTarget.parentElement?.classList.add('hidden')}
+                />
+              </figure>
+            );
+          case 'list':
+            return (
+              <ul key={i} className="my-4 list-disc space-y-1.5 pl-5 marker:text-navy-400">
+                {block.items.map((item, j) => (
+                  <li key={j}>{linkify(item)}</li>
+                ))}
+              </ul>
+            );
+          default:
+            return (
+              <p key={i} className={`my-4 first:mt-0 ${block.lines[0].startsWith('※') ? 'text-sm text-gray-500' : ''}`}>
+                {block.lines.map((line, j) => (
+                  <Fragment key={j}>
+                    {j > 0 && <br />}
+                    {linkify(line)}
+                  </Fragment>
+                ))}
+              </p>
+            );
         }
-        return <div key={`line-${index}`}>{line || <>&nbsp;</>}</div>;
       })}
     </div>
   );
-};
+}
+
+const toSummary = (content: string) =>
+  content.replace(/^#+\s*/gm, '').replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim().slice(0, 160);
 
 export default function NoticeDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const notice = notices.find((n) => n.id === id);
+  const { notices, failed, retry } = useNotices();
+  const notice = notices?.find((n) => n.id === id);
 
-  if (!notice) {
+  if (notices && !notice) {
     return (
       <div className="min-h-screen bg-dark-900 flex items-center justify-center">
         <SEO
@@ -57,101 +146,93 @@ export default function NoticeDetailPage() {
     );
   }
 
-  const noticeSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: notice.title,
-    description: notice.content.slice(0, 200),
-    url: `${SITE_URL}/notices/${notice.id}`,
-    author: {
-      '@type': 'Organization',
-      name: notice.author,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: "TOBIG's",
-      logo: {
-        '@type': 'ImageObject',
-        url: `${SITE_URL}/favicon.png`,
-      },
-    },
-    datePublished: notice.date,
-    articleSection: '공지사항',
-    inLanguage: 'ko',
-  };
-
   return (
     <div className="min-h-screen bg-dark-900">
-      <SEO
-        title={`${notice.title} | TOBIG's 공지사항`}
-        description={notice.content.slice(0, 200)}
-        keywords="투빅스 공지, TOBIG's 소식, 데이터 동아리 공지"
-        ogUrl={`${SITE_URL}/notices/${notice.id}`}
-        schema={noticeSchema}
-      />
+      {notice ? (
+        <SEO
+          title={`${notice.title} | TOBIG's 공지사항`}
+          description={toSummary(notice.content)}
+          keywords="투빅스 공지, TOBIG's 소식, 데이터 동아리 공지"
+          ogUrl={`${SITE_URL}/notices/${notice.id}`}
+          schema={{
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: notice.title,
+            description: toSummary(notice.content),
+            url: `${SITE_URL}/notices/${notice.id}`,
+            author: { '@type': 'Organization', name: "TOBIG's" },
+            publisher: {
+              '@type': 'Organization',
+              name: "TOBIG's",
+              logo: { '@type': 'ImageObject', url: `${SITE_URL}/favicon.png` },
+            },
+            datePublished: notice.date,
+            articleSection: '공지사항',
+            inLanguage: 'ko',
+          }}
+        />
+      ) : (
+        <SEO title="공지사항 | TOBIG's 투빅스" description="투빅스 공지사항" />
+      )}
       <Navbar />
 
-      <main className="pt-24 md:pt-32 pb-20">
+      <main className="pt-24 md:pt-32 pb-24">
         <div className="max-w-3xl mx-auto px-4 md:px-6">
-          {/* Back */}
           <Link
             to="/notices"
-            className="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-300 text-sm mb-8 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-300"
           >
             <i className="ri-arrow-left-line" />
-            목록으로
+            공지사항
           </Link>
 
-          {/* Article */}
-          <article className="bg-dark-800 border border-dark-600/40 rounded-xl overflow-hidden">
-            {/* Header */}
-            <div className="px-6 md:px-8 py-6 border-b border-dark-600/40">
-              {notice.isPinned && (
-                <span className="inline-block px-2.5 py-0.5 bg-navy-600/30 border border-navy-600/40 rounded text-navy-300 text-xs font-medium mb-3">
-                  공지
-                </span>
-              )}
-              <h1 className="text-white font-bold text-xl md:text-2xl leading-snug mb-4">
-                {notice.title}
-              </h1>
-              <div className="flex items-center gap-4 text-gray-500 text-sm">
-                <span className="flex items-center gap-1.5">
-                  <i className="ri-user-line text-xs" />
-                  {notice.author}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <i className="ri-calendar-line text-xs" />
-                  {notice.date}
-                </span>
-              </div>
+          {failed ? (
+            <div className="mt-8">
+              <LoadError onRetry={retry} />
             </div>
-
-            {/* Body */}
-            <div className="px-6 md:px-8 py-6">
-              {/* content 안에 이미지 플레이스홀더가 없을 때만 상단에 이미지 표시 */}
-              {notice.image && !hasImagePlaceholder(notice.content) && (
-                <div className="mb-6 overflow-hidden rounded-lg border border-dark-600/40">
-                  <img
-                    src={notice.image}
-                    alt="공지 이미지"
-                    className="w-full h-auto object-cover"
-                  />
+          ) : notice ? (
+            <article className="mt-8">
+              <header className="border-b border-dark-500/70 pb-8">
+                <div className="flex items-center gap-3">
+                  <CategoryTag category={notice.category} />
+                  {notice.isPinned && (
+                    <span className="flex items-center gap-1 text-xs text-navy-300">
+                      <i className="ri-pushpin-2-fill" />
+                      고정 공지
+                    </span>
+                  )}
                 </div>
-              )}
-              {renderContent(notice.content, notice.image)}
-            </div>
-          </article>
+                <h1 className="mt-4 text-2xl md:text-[2rem] font-bold leading-snug tracking-tight text-white break-keep">
+                  {notice.title}
+                </h1>
+                <p className="mt-4 text-sm text-gray-500">
+                  <time dateTime={notice.date} className="tabular-nums">
+                    {formatNoticeDate(notice.date)}
+                  </time>
+                  <span className="mx-2 text-dark-500">|</span>
+                  투빅스 운영진
+                </p>
+              </header>
 
-          {/* Back Button */}
-          <div className="mt-6">
-            <Link
-              to="/notices"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-dark-700 hover:bg-dark-600 border border-dark-600/40 text-gray-300 hover:text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
-            >
-              <i className="ri-list-unordered" />
-              목록으로
-            </Link>
-          </div>
+              <NoticeBody content={notice.content} />
+
+              <footer className="mt-16 flex justify-center border-t border-dark-500/70 pt-8">
+                <Link
+                  to="/notices"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:border-white/30 hover:bg-white/5"
+                >
+                  <i className="ri-list-unordered" />
+                  목록으로
+                </Link>
+              </footer>
+            </article>
+          ) : (
+            <div className="mt-8 border-b border-dark-500/70 pb-8" aria-label="공지사항을 불러오는 중">
+              <div className="h-6 w-12 rounded-md bg-dark-700" />
+              <div className="mt-4 h-8 w-3/4 rounded bg-dark-700" />
+              <div className="mt-4 h-4 w-32 rounded bg-dark-700" />
+            </div>
+          )}
         </div>
       </main>
 

@@ -52,7 +52,8 @@ function parseCsv(text: string): string[][] {
  * @param csvUrl 시트 "파일 > 공유 > 웹에 게시" 또는 export?format=csv 링크
  */
 export async function fetchSheetAsObjects(csvUrl: string): Promise<Record<string, string>[]> {
-  const res = await fetch(csvUrl);
+  // 응답이 없을 때 로딩이 끝없이 이어지지 않도록 10초에서 끊는다
+  const res = await fetch(csvUrl, { signal: AbortSignal.timeout(10_000) });
   if (!res.ok) {
     throw new Error(`구글 시트를 불러오지 못했습니다 (status: ${res.status})`);
   }
