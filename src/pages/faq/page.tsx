@@ -134,7 +134,7 @@ export default function FaqPage() {
 
           {/* 대화: 새 말을 스크린리더가 읽어 준다 */}
           <div role="log" aria-live="polite" className="flex flex-col gap-3">
-            <BearSays>{'안녕하세요! 투빅스 곰이에요.\n투빅스에 대해 궁금한 건 무엇이든 물어보세요.'}</BearSays>
+            <BearSays>{'안녕하세요! 투빅이에요.\n투빅스에 대해 궁금한 건 무엇이든 물어보세요.'}</BearSays>
             {!faqs && TYPING}
             {faqs?.length === 0 && (
               <BearSays>{'앗, 질문 목록을 불러오지 못했어요.\n궁금한 점은 아래 카톡으로 물어봐 주세요!'}</BearSays>
