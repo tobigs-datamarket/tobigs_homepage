@@ -57,7 +57,8 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-J0030STCK1');
+    // page_view는 src/router/index.ts 에서 페이지 제목이 바뀐 뒤 직접 보낸다 (중복 방지)
+    gtag('config', 'G-J0030STCK1', { send_page_view: false });
   </script>
 </head>
   <body>

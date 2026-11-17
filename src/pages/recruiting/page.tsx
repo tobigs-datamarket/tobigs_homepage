@@ -29,8 +29,8 @@ const STARS = [
   { left: '93%', top: '8%', size: 'text-lg', delay: '-1.6s' },
 ];
 
-// 지원 버튼: 첫 화면과 맨 아래에 같은 모양으로 두 번 나온다
-function ApplyLink() {
+// 지원 버튼: 첫 화면과 맨 아래에 같은 모양으로 두 번 나온다(FAQ 맨 아래에서도 쓴다)
+export function ApplyLink() {
   return (
     <a
       href={RECRUITING_DDAY.applyFormUrl}
@@ -236,18 +236,19 @@ function OffSeasonView() {
             onSubmit={handleSubmit}
             className="bg-dark-800 border border-dark-600/40 rounded-2xl p-8"
           >
-            <label className="block text-white font-medium text-sm mb-3">
+            <label htmlFor="recruit-email" className="block text-white font-medium text-sm mb-3">
               이메일 주소
             </label>
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <input
+                id="recruit-email"
                 type="email"
                 name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ToBigs@email.com"
                 disabled={submitting}
-                className="flex-1 px-4 py-3 bg-dark-700 border border-dark-600/40 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-navy-600 transition-colors disabled:opacity-60"
+                className="flex-1 px-4 py-3 bg-dark-700 border border-dark-600/40 rounded-lg text-sm text-white placeholder-gray-500 focus:placeholder-transparent focus:outline-none focus:border-navy-600 transition-colors disabled:opacity-60"
               />
               <button
                 type="submit"
