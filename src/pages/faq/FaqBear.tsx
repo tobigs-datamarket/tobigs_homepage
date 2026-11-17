@@ -28,10 +28,12 @@ export default function FaqBear({ className = '' }: { className?: string }) {
         <circle cx="624" cy="194" r="38" fill="#fdf0a0" stroke="none" />
         <circle cx="623" cy="189" r="15" fill="#fff" stroke="none" />
         <g className="fb-eyes" stroke="none">
-          <ellipse cx="528" cy="431" rx="23" ry="24" fill="#0a0b0f" />
-          <ellipse cx="724" cy="431" rx="23" ry="24" fill="#0a0b0f" />
-          <circle cx="520.5" cy="422" r="8" fill="#fff" />
-          <circle cx="716" cy="422" r="8" fill="#fff" />
+          <ellipse cx="546" cy="428" rx="28" ry="30" fill="#0a0b0f" />
+          <ellipse cx="706" cy="428" rx="28" ry="30" fill="#0a0b0f" />
+          <circle cx="537" cy="417" r="10" fill="#fff" />
+          <circle cx="697" cy="417" r="10" fill="#fff" />
+          <circle cx="555" cy="440" r="4" fill="#fff" />
+          <circle cx="715" cy="440" r="4" fill="#fff" />
         </g>
         <path d="M593.5 447C593.5 433 612 431.5 626.5 431.5S659.5 433 659.5 447C659.5 458 637 470 626.5 470S593.5 458 593.5 447Z" fill="#0a0b0f" stroke="none" />
         <ellipse cx="614.5" cy="443" rx="12" ry="4.7" fill="#fff" stroke="none" />

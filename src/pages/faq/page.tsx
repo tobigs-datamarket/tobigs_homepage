@@ -209,7 +209,7 @@ export default function FaqPage() {
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/20 px-8 py-3.5 text-[0.9375rem] font-semibold text-gray-200 transition-colors hover:border-white/40 hover:bg-white/5"
               >
                 <i className="ri-kakao-talk-fill text-yellow-300" />
-                카톡으로 직접 물어보기
+                카톡으로 문의하기
               </a>
               {isRecruitingOpen(Date.now(), RECRUITING_DDAY) && <ApplyLink />}
             </div>
