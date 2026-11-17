@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchSheetAsObjects } from './googleSheet';
 
-// 공지는 구글 시트(공지 탭)에서만 관리한다. 열: id, date, category, title, pinned, content
+// 공지는 구글 시트(공지 탭)에서만 관리한다. 열 이름으로 읽으므로 순서가 바뀌거나 다른 열이 있어도 괜찮다.
+// 쓰는 열: id, date, title, pinned, content
 export interface Notice {
   id: string;
   date: string; // YYYY-MM-DD
-  category: string; // 모집 / 발표 / 행사 / 안내
   title: string;
   content: string; // "## 소제목", "- 항목", URL 한 줄(이미지/링크) 지원
   isPinned: boolean;
@@ -35,7 +35,6 @@ export async function fetchNoticesFromSheet(): Promise<Notice[]> {
     .map((row) => ({
       id: row.id,
       date: toIsoDate(row.date ?? ''),
-      category: row.category || '안내',
       title: row.title,
       content: row.content ?? '',
       isPinned: row.pinned?.toUpperCase() === 'TRUE',

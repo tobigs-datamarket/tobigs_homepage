@@ -4,7 +4,7 @@ import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import SEO from '@/components/SEO';
 import { formatNoticeDate, useNotices } from '@/services/notices';
-import { CategoryTag, LoadError } from '@/pages/notices/page';
+import { LoadError } from '@/pages/notices/page';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 
@@ -193,16 +193,13 @@ export default function NoticeDetailPage() {
           ) : notice ? (
             <article className="mt-8">
               <header className="border-b border-dark-500/70 pb-8">
-                <div className="flex items-center gap-3">
-                  <CategoryTag category={notice.category} />
-                  {notice.isPinned && (
-                    <span className="flex items-center gap-1 text-xs text-navy-300">
-                      <i className="ri-pushpin-2-fill" />
-                      고정 공지
-                    </span>
-                  )}
-                </div>
-                <h1 className="mt-4 text-2xl md:text-[2rem] font-bold leading-snug tracking-tight text-white break-keep">
+                {notice.isPinned && (
+                  <span className="mb-3 flex items-center gap-1 text-xs text-navy-300">
+                    <i className="ri-pushpin-2-fill" />
+                    고정 공지
+                  </span>
+                )}
+                <h1 className="text-2xl md:text-[2rem] font-bold leading-snug tracking-tight text-white break-keep">
                   {notice.title}
                 </h1>
                 <p className="mt-4 text-sm text-gray-500">
