@@ -63,12 +63,12 @@ export default function AboutSection() {
               visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
             }`}
           >
-            {/* 문구가 들어간 카드 이미지라 자르지 않는다: 원본 비율(1368×768) 그대로 폭에 맞춤 */}
+            {/* 문구가 들어간 카드 이미지라 자르지 않는다: 원본 비율(1440×809) 그대로 폭에 맞춤 */}
             <img
-              src="https://storage.readdy-site.link/project_files/08aeba0a-a656-461b-aef6-541b167b6190/9806c8cc-c9a4-44e0-8ec5-ccf4d471a142_about.png?v=a107218ef19969c736091ca54abbff91"
+              src="https://lh3.googleusercontent.com/d/1LaE6sVTzZWaHF92IWkZZvUEpekX7eXGx"
               alt="투빅스 소개"
-              width={1368}
-              height={768}
+              width={1440}
+              height={809}
               loading="lazy"
               decoding="async"
               className="block h-auto w-full rounded-2xl"
