@@ -128,7 +128,7 @@ export const aiCurriculum: CurriculumWeek[] = [
   { week: '6주차', topic: 'Multimodal', description: 'CLIP, VLM' },
   { week: '7주차', topic: 'LLM Engineering', description: 'LoRA, RAG' },
   { week: '8주차', topic: 'RL & Alignment', description: 'PPO, RLHF' },
-  { week: '9주차', topic: 'AI in Production', description: 'MLOps, LLM 서빙' },
+  { week: '9주차', topic: 'AI in Production', description: '추천시스템, MLOps' },
   { week: '10주차', topic: '심화세션 발표회', description: '', isCommon: true },
 ];
 
@@ -204,8 +204,8 @@ export const curriculumStations: CurriculumStation[] = [
     { title: 'RLHF·DPO·GRPO', topics: ['Reward Model', 'DPO Loss', 'GRPO'] },
   ] },
   { week: 9, track: 'ai', title: 'AI in Production', speakers: [
-    { title: 'MLOps·모니터링', topics: ['MLflow', 'FastAPI', 'Docker', 'Drift'] },
-    { title: 'LLMOps·서빙', topics: ['LLM 평가', 'vLLM', 'KV Cache'] },
+    { title: '추천시스템·Retrieval·Ranking', topics: ['Two-Tower', 'CTR 예측', 'Interleaving'] },
+    { title: 'MLOps·모니터링', topics: ['MLflow', 'CI/CD', 'Data Drift'] },
   ] },
   { week: 10, track: 'common', title: '심화세션 발표회', speakers: [] },
 ];
