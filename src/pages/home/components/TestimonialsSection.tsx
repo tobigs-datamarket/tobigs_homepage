@@ -89,13 +89,13 @@ export default function TestimonialsSection() {
           {/* Arrows */}
           <button
             onClick={() => handleArrow(prev)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 md:-translate-x-8 w-9 h-9 flex items-center justify-center bg-dark-700 hover:bg-navy-700 border border-dark-600/40 rounded-full text-gray-400 hover:text-white transition-all cursor-pointer"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-5 lg:-translate-x-8 w-9 h-9 flex items-center justify-center bg-dark-700 hover:bg-navy-700 border border-dark-600/40 rounded-full text-gray-400 hover:text-white transition-all cursor-pointer"
           >
             <i className="ri-arrow-left-s-line text-lg" />
           </button>
           <button
             onClick={() => handleArrow(next)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 md:translate-x-8 w-9 h-9 flex items-center justify-center bg-dark-700 hover:bg-navy-700 border border-dark-600/40 rounded-full text-gray-400 hover:text-white transition-all cursor-pointer"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-5 lg:translate-x-8 w-9 h-9 flex items-center justify-center bg-dark-700 hover:bg-navy-700 border border-dark-600/40 rounded-full text-gray-400 hover:text-white transition-all cursor-pointer"
           >
             <i className="ri-arrow-right-s-line text-lg" />
           </button>

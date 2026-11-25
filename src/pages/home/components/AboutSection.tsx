@@ -38,7 +38,7 @@ export default function AboutSection() {
   }, []);
 
   return (
-    <section className="section-padding bg-dark-900/50">
+    <section className="section-padding bg-dark-900/50 overflow-x-clip">
       <div className="max-w-7xl mx-auto px-4 md:px-6" ref={ref}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-center">
           {/* Left: Text */}

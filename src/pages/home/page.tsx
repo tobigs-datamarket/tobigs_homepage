@@ -9,6 +9,7 @@ import ProgramsSection from './components/ProgramsSection';
 import TracksSection from './components/TracksSection';
 import ProcessSection from './components/ProcessSection';
 import TestimonialsSection from './components/TestimonialsSection';
+import PartnersSection from './components/PartnersSection';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://example.com';
 const LOGO_URL = 'https://static.readdy.ai/image/3d684be57ac9d3c5f5a6f09d6e1e16dd/0e3510c4835073ce61a922f30b65e40b.png';
@@ -69,6 +70,7 @@ export default function Home() {
         <TracksSection />
         <ProcessSection />
         <TestimonialsSection />
+        <PartnersSection />
       </main>
       <Footer />
     </div>
