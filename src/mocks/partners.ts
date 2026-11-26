@@ -17,6 +17,7 @@ export const partners: Partner[] = [
   p('광동제약', 'kwangdong'),
   p('Lovable', 'lovable'),
   p('한국지능정보사회진흥원', 'nia'),
+  p('하움데코', 'haumdeco'),
   p('AWS', 'aws'),
   p('크라이치즈버거', 'crycheeseburger'),
   p('패스트캠퍼스', 'fastcampus'),
